@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +35,8 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping(path= "/country")
 public class CountryController{
+	
+	private static final Logger logger = LoggerFactory.getLogger(CountryController.class);
 	
     @Autowired
     private CountryServiceImpl countryServiceImpl;
@@ -66,7 +71,8 @@ public class CountryController{
     	cres.setResponseCode("1");
     	cres.setResponseMessage("Transaction Complete");
     	System.out.println("FetchAllCountryClientResponseDto >> "+cres);
-    	
+    	logger.debug("FetchAllCountryClientResponseDto >> "+cres);
+		
         return cres;
     }
     
@@ -88,7 +94,8 @@ public class CountryController{
     	cres.setResponseCode("1");
     	cres.setResponseMessage("Transaction Complete");
     	System.out.println("FetchCountryByIdClientResponse >> "+cres);
-    	
+    	logger.debug("FetchCountryByIdClientResponse >> "+cres);
+		
         return cres;
     }
     
@@ -111,12 +118,16 @@ public class CountryController{
         	cres.setResponseCode("1");
         	cres.setResponseMessage("Transaction Complete");
         	System.out.format("Added Country with Id : %s , Name-City : %s\n", country.getId(), country.getCountryName()+"-"+country.getCityName());
+			logger.debug("Added Country with Id : %s , Name-City : %s\n", country.getId(), country.getCountryName()+"-"+country.getCityName());
         	System.out.println("AddCountryClientResponse >> "+cres);
+			logger.debug("AddCountryClientResponse >> "+cres);
     	}else{
     		cres.setResponseCode("0");
         	cres.setResponseMessage("Transaction Not Complete"); 
     		System.out.println("Request Body empty, could not add employee...");
+			logger.debug("Request Body empty, could not add employee...");
     		System.out.println("AddCountryClientResponse >> "+cres);
+			logger.debug("AddCountryClientResponse >> "+cres);
     	}
     	
     	return cres;
