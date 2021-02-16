@@ -39,4 +39,3 @@ cmd ["sh" ,"-c","Executing Docker Image..."]
 cmd ["java", "-jar","/opt/CountryCurdRestService-0.0.1-SNAPSHOT.jar"]
 
 
-

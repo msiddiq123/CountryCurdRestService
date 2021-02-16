@@ -46,8 +46,7 @@ public class CountryController{
     2)Spring RESTFul --> @PathVariable, @RequestParam
       Jersey (JAX-RS) --> @PathParam, @QueryParam
     */
-    
-    
+        
     @ApiOperation(value = "Get list of all countries", response = FetchAllCountryClientResponseDto.class)
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "Suceess|OK..."),
