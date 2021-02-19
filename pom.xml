@@ -94,5 +94,19 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<!-- Required when the artifact has to be uploaded to Nexus private repository
+	<distributionManagement>
+		<snapshotRepository>
+		  <id>proj-nexus-repo</id>
+		  <url>http://localhost:9091/repository/CountryCurdRestService-Snapshot/</url>
+		</snapshotRepository>
+		<repository>
+		  <id>proj-nexus-repo</id>
+		  <url>http://localhost:9091/repository/CountryCurdRestService-Release/</url>
+		</repository>  
+  </distributionManagement> -->
+	
+	
 
 </project>
