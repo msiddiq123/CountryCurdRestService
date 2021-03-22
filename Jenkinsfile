@@ -23,9 +23,9 @@ pipeline {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Deploy Artifact >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'	  
 	  //Using Jenkins Credentials only for a particular stage
 	  withCredentials([
-	      usernamePassword(credentials: 'global-jenkins-credentials', usernameVariable: USER, passwordVariable: PWD)
+	      usernamePassword(credentials: 'global-jenkins-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
 	  ]){
-		echo "Executing scripts with ${USER} and ${PWD}"
+		echo "Executing scripts with ${USERNAME} and ${PASSWORD}"
 	  }
         }
      }
