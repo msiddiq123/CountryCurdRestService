@@ -22,7 +22,7 @@ pipeline {
 	  echo "Building version ${CODE_VERSION} and will be deploying with ${JENKINS_CREDENTIALS}"
 	  echo "PATH ====> ${PATH}"
           echo "M2_HOME ====> ${M2_HOME}"
-	  sh 'mvn -version'
+	  bat 'mvn -version'
         }
      }
      
