@@ -53,7 +53,7 @@ pipeline {
      always{
 	echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - always >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
         mail to: 'maroof.siddique2013@gmail.com',
-        subject: "${env.JOB_BASE_NAME} - Build # ${env.BUILD_NUMBER} - ${BUILD_STATUS} ${currentBuild.result} !",
+        subject: "${env.JOB_BASE_NAME} - Build # ${env.BUILD_NUMBER} - ${currentBuild.result} !",
         body: "Something is wrong with ${env.BUILD_URL}"	
      }
      
