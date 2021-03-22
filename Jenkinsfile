@@ -20,7 +20,9 @@ pipeline {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build & Create Artifact >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
 	  //Using Jenkins Environment Variable
 	  echo "Building version ${CODE_VERSION} and will be deploying with ${JENKINS_CREDENTIALS}"
-	  sh 'mvn --version'
+	  echo "PATH ====> ${PATH}"
+          echo "M2_HOME ====> ${M2_HOME}"
+	  
         }
      }
      
