@@ -25,7 +25,7 @@ pipeline {
 	  withCredentials([
 	      usernamePassword(credentials: 'global-jenkins-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
 	  ]){
-		echo "Executing scripts with ${USERNAME} and ${PASSWORD}"
+		echo "Executing scripts with $USERNAME and $PASSWORD"
 	  }
         }
      }
