@@ -3,7 +3,7 @@ pipeline {
  agent any
  
  environment{
-    CODE_VERSION=1.0.0
+    CODE_VERSION='1.0.0'
     JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')  
  }
  
