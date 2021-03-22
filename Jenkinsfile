@@ -51,7 +51,10 @@ pipeline {
    
    post{
      always{
-	echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - always >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'	  
+	echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - always >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+        mail to: 'maroof.siddique2013@gmail.com',
+        subject: "$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!",
+        body: "Something is wrong with ${env.BUILD_URL}"	
      }
      
      success{
