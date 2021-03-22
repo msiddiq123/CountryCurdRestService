@@ -26,6 +26,11 @@ pipeline {
      }
      
      stage('Deploy Artifact') { 
+        when {               
+           expression { 
+		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'dev' 
+	   }
+        }     
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Deploy Artifact >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'	  
 	  //Using Jenkins Credentials only for a particular stage
