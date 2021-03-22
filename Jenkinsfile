@@ -22,7 +22,7 @@ pipeline {
 	  echo "Building version ${CODE_VERSION} and will be deploying with ${JENKINS_CREDENTIALS}"
 	  echo "PATH ====> ${PATH}"
           echo "M2_HOME ====> ${M2_HOME}"
-	  
+	  echo 'mvn --version'
         }
      }
      
@@ -34,7 +34,7 @@ pipeline {
 	      usernamePassword(credentialsId: 'global-jenkins-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
 	  ]){
 		//https://wiki.jenkins.io/display/JENKINS/Credentials%20Binding%20Plugin
-		echo "Executing scripts with ${USERNAME} and ${PASSWORD}"
+		echo "Deploying to Jenkins Server with ${USERNAME} and ${PASSWORD}"
 	  }
         }
      }
