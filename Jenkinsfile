@@ -1,4 +1,4 @@
-pipeline {
+﻿pipeline {
  
  agent any
  
@@ -54,7 +54,7 @@ pipeline {
 	echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - always >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
         mail to: 'maroof.siddique2013@gmail.com',
         subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${currentBuild.result} !",
-        body: "Please find the build and log details at ${env.BUILD_URL}"	
+        body: "Please find the build and log details at ${env.BUILD_URL} \n  Log file is available at ${env.JENKINS_HOME}/jobs/${env.JOB_NAME}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/log" 	
      }
      
      success{
