@@ -3,13 +3,12 @@ pipeline {
  agent any
  
    stages {
-   
-     //NB:- sh works for Linux and bat works for windows
+        
      stage('Build & Create Artifact') { 
 	steps {
 	   echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build & Create Artifact >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
 	  //sh 'echo >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build & Create Artifact >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
-	  //sh 'mvn -version'
+	  sh 'mvn -version'
         }
      }
      
