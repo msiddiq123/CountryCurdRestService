@@ -15,6 +15,11 @@ pipeline {
    //NB:- In Linux we need to execute sh 'echo Executing stage - Build & Create Artifact...' /  sh 'mvn clean install' and in windows we can use bat like bat 'mvn -version'
    stages {        
      stage('Build & Create Artifact') { 
+        when {               
+           expression { 
+		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'dev' 
+	   }
+        }  
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build & Create Artifact >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
 	  //Using Jenkins Environment Variable
@@ -28,7 +33,7 @@ pipeline {
      stage('Deploy Artifact') { 
         when {               
            expression { 
-		env.BRANCH_NAME == 'mastr' || env.BRANCH_NAME == 'dev' 
+		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'dev' 
 	   }
         }     
 	steps {
