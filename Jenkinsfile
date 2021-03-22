@@ -49,12 +49,14 @@
      }     
    }//stages
    
+   //emailext attachLog: true,
+   //attachmentsPattern: 'generatedFile.txt',
    post{
      always{
 	echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - always >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'	
         mail to: 'maroof.siddique2013@gmail.com',
         subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${currentBuild.result} !",
-        body: "Please find the build and log details at ${env.BUILD_URL}" 	
+        body: "Please find the build and console log details at ${env.BUILD_URL}" 	
      }
      
      success{
