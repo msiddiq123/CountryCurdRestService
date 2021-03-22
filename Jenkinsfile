@@ -2,9 +2,14 @@ pipeline {
  
  agent any
  
+ tools{
+   maven 'Jenkins-Maven'
+ }
+ 
  environment{
     CODE_VERSION='1.0.0'
-    JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')  
+    GIT_CREDENTIALS = credentials('global-git-credentials')
+    JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')    
  }
  
    //NB:- In Linux we need to execute sh 'echo Executing stage - Build & Create Artifact...' /  sh 'mvn clean install' 
@@ -15,6 +20,7 @@ pipeline {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build & Create Artifact >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
 	  //Using Jenkins Environment Variable
 	  echo "Building version ${CODE_VERSION} and will be deploying with ${JENKINS_CREDENTIALS}"
+	  sh 'mvn --version'
         }
      }
      
