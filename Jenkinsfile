@@ -8,14 +8,14 @@ pipeline {
      stage('Build & Create Artifact') { 
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build & Create Artifact >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
-	  mvn -version
+	  'mvn -version'
         }
      }
      
      stage('Deploy Artifact') { 
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Deploy Artifact >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'	  
-	  sh 'mvn -version'
+	  'mvn -version'
         }
      }
      
