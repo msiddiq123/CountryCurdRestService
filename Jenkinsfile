@@ -14,7 +14,7 @@ pipeline {
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build & Create Artifact >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
 	  //Using Jenkins Environment Variable
-	  echo "Building version ${NEW_VERSION} and will be deploying with ${JENKINS_CREDENTIALS}"
+	  echo "Building version ${CODE_VERSION} and will be deploying with ${JENKINS_CREDENTIALS}"
         }
      }
      
