@@ -1,6 +1,7 @@
 #############################################################################################################################################################
 	#1)build the project using mvn clean install -Dmaven.test.skip=true
-	#2)Docker Hub Login/Logout - docker system info / docker login / docker logout
+	#2)Docker Hub Login/Logout - docker system info / docker login / docker logout / docker login -u msiddiq123 -p **** https://index.docker.io/v1  
+	#                          - NB:-Your email and your docker id are 2 separate things. It looks like you can use your email to log in the site but not the CLI. 
 	#3)Docker Build Image - docker build -t msiddiq123/country-curd-rest-service:dev-1.0 .
 	#4)Docker List Images - docker image ls  OR docker images -a
 	#5)Docker Hub Push - docker push msiddiq123/country-curd-rest-service:dev-1.0
