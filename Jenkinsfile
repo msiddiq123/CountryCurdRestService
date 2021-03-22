@@ -12,9 +12,8 @@ pipeline {
     JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')    
  }
  
-   //NB:- In Linux we need to execute sh 'echo Executing stage - Build & Create Artifact...' /  sh 'mvn clean install' 
-   stages {
-        
+   //NB:- In Linux we need to execute sh 'echo Executing stage - Build & Create Artifact...' /  sh 'mvn clean install' and in windows we can use bat like bat 'mvn -version'
+   stages {        
      stage('Build & Create Artifact') { 
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build & Create Artifact >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
@@ -37,9 +36,22 @@ pipeline {
 		echo "Deploying to Jenkins Server with ${USERNAME} and ${PASSWORD}"
 	  }
         }
+     }     
+   }//stages
+   
+   post{
+     always{
+	echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - always >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'	  
      }
      
+     success{
+        echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - success >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'	  
+     }
      
-   }//stages
+     failure{
+       echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - failure >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'	  
+     }
+   
+   }//post
    
 }//pipeline
