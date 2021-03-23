@@ -9,7 +9,8 @@ pipeline {
   
    environment{
      GIT_CREDENTIALS = credentials('global-git-credentials')
-     JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')    
+     JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')
+     JOB_ENV = 'dev'     
    }
 
    //NB:- In Linux we need to execute sh 'echo Executing stage - Build & Create Artifact...' /  sh 'mvn clean install' and in windows we can use bat like bat 'mvn -version'
@@ -27,22 +28,24 @@ pipeline {
    }//stages
    
    post{
-     always{
-	echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - always >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'	
-        mail to: 'maroof.siddique2013@gmail.com',
-        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${currentBuild.result} !",
-        body: "Please find the build and console log details at ${env.BUILD_URL}" 	
-     }
-     
      success{
-        echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - success >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
-        echo "${env.JOB_NAME} executed successfuly..."	
+        echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post success handler >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'        
+	mail to: 'maroof.siddique2013@gmail.com',
+        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${env.BRANCH_NAME} - ${JOB_ENV} - ${currentBuild.result} !",
+        body: "Please find the build and console log details at ${env.BUILD_URL}" 
      }
      
      failure{
-       echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - failure >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
-       echo "${env.JOB_NAME} failed to execute successfuly..."	       
-     }   
+       echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post failure handler >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'      
+       mail to: 'maroof.siddique2013@gmail.com',
+       subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${env.BRANCH_NAME} - ${JOB_ENV} - ${currentBuild.result} !",
+       body: "Please find the build and console log details at ${env.BUILD_URL}" 
+     }  
+
+     always{
+	echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - always >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+        echo 'Job execution completed...'		
+     }
    }//post
       
 }//pipeline
