@@ -15,7 +15,7 @@ pipeline {
    environment {
      GIT_CREDENTIALS = credentials('global-git-credentials')
      JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')
-     BUILD_ENV = ${params.buildEnvironment}  
+     BUILD_ENV = "${params.buildEnvironment}"  
    }
    
    //retry(2) 
