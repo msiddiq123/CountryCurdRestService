@@ -7,7 +7,7 @@ pipeline {
      maven 'Jenkins-Maven'
    }
   
-  //Here we are assuming that the maven build and docker build are happening in the same server where Jenkins is installed
+   //Here we are assuming that the maven build and docker build are happening in the same server where Jenkins is installed
    parameters {
      choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.')
    }
@@ -16,6 +16,10 @@ pipeline {
      GIT_CREDENTIALS = credentials('global-git-credentials')
      JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')
      BUILD_ENV = "${params.buildEnvironment}"  
+     
+     DOCKER_REGISTRY_URL = 'https://registry.hub.docker.com/'
+     DOCKER_REGISTRY_CREDENTIALS = 'global-docker-credentials'
+     DOCKER_REGISTRY_IMAGE = "msiddiq123/country-curd-rest-service:img-${env.BUILD_ID}"     
    }
    
    //retry(2) 
@@ -32,7 +36,14 @@ pipeline {
      stage('Prepare Build Job') {
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Prepare Build Job >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
-          echo "Choose environment between ${BUILD_ENV} >> ${params.buildEnvironment}"
+	  echo 'Reading Jenkinsfile...'
+	  bat 'type Jenkinsfile'
+          echo "M2_HOME ====> ${M2_HOME}"
+	  echo "PATH ====> ${PATH}"
+	  echo 'Checking maven version...'
+          bat 'mvn -version' 
+	  echo 'Checking docker version...'
+	  bat 'docker -v'	  
         }
      }
      
@@ -43,24 +54,9 @@ pipeline {
 	   }
         }
 	steps {
-	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build Project >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
-          //Using Jenkins Environment Variable
-	  echo "Building and deploying in Jenkins Server with ${JENKINS_CREDENTIALS}"
-	  echo "PATH ====> ${PATH}"
-          echo "M2_HOME ====> ${M2_HOME}"
-          bat 'mvn -version' 
+	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build Project >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'        
 	  bat 'mvn clean install -Dmaven.test.skip=true'
-	  bat 'docker images -a'
-	  
-	  script{
-	     docker.withRegistry('https://registry.hub.docker.com/', 'global-docker-credentials') {
-               def customImage = docker.build("msiddiq123/country-curd-rest-service:${BUILD_ENV}-${env.BUILD_ID}")
-               /* Push the container to the custom Registry */
-               customImage.push()
-             }
-	  }
-	  
-	  
+          bat 'dir /p'	  
         }
      }
      
@@ -71,7 +67,9 @@ pipeline {
 	   }
         }     
 	steps {
-	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build Docker Image >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'	  
+	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build Docker Image >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+          echo 'Reading Dockerfile...'
+	  bat 'type Dockerfile'	  
 	  //Using Jenkins Credentials only for a particular stage
 	  withCredentials([
 	      usernamePassword(credentialsId: 'global-jenkins-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
@@ -79,6 +77,17 @@ pipeline {
 		//https://wiki.jenkins.io/display/JENKINS/Credentials%20Binding%20Plugin
 		echo "Connecting to Jenkins Server with ${USERNAME} and ${PASSWORD}"
 	  }
+	  
+	  script{
+	     //Ensure that docker(or docker swarm is configured) engine is installed in the Jenkins server and the Docker service is running.
+	     //https://www.jenkins.io/doc/book/pipeline/docker/
+	     docker.withRegistry(DOCKER_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
+                def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
+                customImage.push()
+             }
+	  }
+	  
+	  bat 'docker images -a'	  
         }
      } 
    }//stages
