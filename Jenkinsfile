@@ -18,8 +18,7 @@ pipeline {
    options {     
      timestamps()
      timeout(time: 15, unit: 'MINUTES')     
-     buildDiscarder(logRotator(numToKeepStr: '15'))
-     copyArtifactPermission(env.JOB_NAME)
+     buildDiscarder(logRotator(numToKeepStr: '15'))     
    }
 
    //NB:- In Linux we need to execute sh 'echo Executing stage - Build & Create Artifact...' /  sh 'mvn clean install' and in windows we can use bat like bat 'mvn -version'
