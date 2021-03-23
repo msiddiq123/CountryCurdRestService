@@ -35,7 +35,7 @@ pipeline {
    stages {
      stage('Prepare Build Job') {
 	steps {
-	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Prepare Build Job >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+	  echo '#################################################### Executing stage - Prepare Build Job ####################################################'
 	  echo 'Reading Jenkinsfile...'
 	  bat 'type Jenkinsfile'
           echo "M2_HOME ====> ${M2_HOME}"
@@ -54,7 +54,7 @@ pipeline {
 	   }
         }
 	steps {
-	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build Project >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'        
+	  echo '#################################################### Executing stage - Build Project ####################################################'        
 	  bat 'mvn clean install -Dmaven.test.skip=true'
           bat 'dir /p'	  
         }
@@ -67,7 +67,7 @@ pipeline {
 	   }
         }     
 	steps {
-	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build Docker Image >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+	  echo '#################################################### Executing stage - Build Docker Image ####################################################'
           echo 'Reading Dockerfile...'
 	  bat 'type Dockerfile'	  
 	  //Using Jenkins Credentials only for a particular stage
@@ -94,13 +94,13 @@ pipeline {
    
    post {
      always {
-	echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - always >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+	echo '#################################################### Executing post [always] handler ####################################################'
         echo 'Job execution completed...'		
      }
      
      //https://plugins.jenkins.io/email-ext/
      success {
-        echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post success handler >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'        
+        echo '#################################################### Executing post [success] handler ####################################################'        
 	emailext attachLog: true,
 	compressLog: true,
 	to: 'maroof.siddique2013@gmail.com',
@@ -111,7 +111,7 @@ pipeline {
      
      //https://plugins.jenkins.io/email-ext/
      failure {
-       echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post failure handler >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+       echo '#################################################### Executing post [failure] handler ####################################################'
        //mail to: 'maroof.siddique2013@gmail.com',
        //subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${currentBuild.result} !",
        //body: "Please find the build and console log details at ${env.BUILD_URL}" 
