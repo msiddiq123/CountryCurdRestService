@@ -24,12 +24,13 @@ pipeline {
 
    //NB:- In Linux we need to execute sh 'echo Executing stage - Build & Create Artifact...' /  sh 'mvn clean install' and in windows we can use bat like bat 'mvn -version'
    stages {
-    stage('Prepare Build Job') {
+     stage('Prepare Build Job') {
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Prepare Build Job >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
           echo "Choose environment between ${BUILD_ENV}"
         }
-   
+     }
+     
      stage('Build Project') {
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build Project >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
