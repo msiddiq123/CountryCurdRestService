@@ -27,7 +27,12 @@ pipeline {
      }
    }//stages
    
-   post{
+   post('Post Execution Steps') {
+     always{
+	echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - always >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+        echo 'Job execution completed...'		
+     }
+     
      success{
         echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post success handler >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'        
 	mail to: 'maroof.siddique2013@gmail.com',
@@ -41,11 +46,6 @@ pipeline {
        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${env.BRANCH_NAME} - ${JOB_ENV} - ${currentBuild.result} !",
        body: "Please find the build and console log details at ${env.BUILD_URL}" 
      }  
-
-     always{
-	echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - always >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
-        echo 'Job execution completed...'		
-     }
    }//post
       
 }//pipeline
