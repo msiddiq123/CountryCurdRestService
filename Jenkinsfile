@@ -10,10 +10,26 @@ pipeline {
    environment {
      GIT_CREDENTIALS = credentials('global-git-credentials')
      JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')
-     BUILD_ENV = 'dev'     
+     BUILD_ENV = 'dev,sit,uat,pre,prod'     
+   }
+   
+   options {     
+     timestamps()
+     timeout(time: 15, unit: 'MINUTES')
+     //retry(2)
+     buildDiscarder(logRotator(numToKeepStr: '15'))
+     copyArtifactPermission(env.JOB_NAME)
    }
 
    //NB:- In Linux we need to execute sh 'echo Executing stage - Build & Create Artifact...' /  sh 'mvn clean install' and in windows we can use bat like bat 'mvn -version'
+   stages {
+     stage('Prepare Build Job') {
+	steps {
+	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Prepare Build Job >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+          echo "Choose environment between ${BUILD_ENV}"
+        }
+     }
+   
    stages {
      stage('Build Project') {
 	steps {
