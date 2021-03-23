@@ -1,9 +1,8 @@
-﻿pipeline {
- 
- agent any
+pipeline {
+   agent any
   
 
-   stages {        
+   stages {
      stage('Build & Create Artifact') {
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build & Create Artifact >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'	  	 
