@@ -3,11 +3,11 @@ pipeline {
 
    agent any
    
-   tools{
+   tools {
      maven 'Jenkins-Maven'
    }
   
-   environment{
+   environment {
      GIT_CREDENTIALS = credentials('global-git-credentials')
      JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')
      JOB_ENV = 'dev'     
@@ -15,9 +15,9 @@ pipeline {
 
    //NB:- In Linux we need to execute sh 'echo Executing stage - Build & Create Artifact...' /  sh 'mvn clean install' and in windows we can use bat like bat 'mvn -version'
    stages {
-     stage('Build & Create Artifact') {
+     stage('Build Project') {
 	steps {
-	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build & Create Artifact >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build Project >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
           //Using Jenkins Environment Variable
 	  echo "Building and deploying in Jenkins Server with ${JENKINS_CREDENTIALS}"
 	  echo "PATH ====> ${PATH}"
@@ -25,22 +25,40 @@ pipeline {
           bat 'mvn -version' 	  
         }
      }
+     
+     stage('Build Docker Image') { 
+        when {               
+           expression { 
+		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'dev' 
+	   }
+        }     
+	steps {
+	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build Docker Image >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'	  
+	  //Using Jenkins Credentials only for a particular stage
+	  withCredentials([
+	      usernamePassword(credentialsId: 'global-jenkins-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+	  ]){
+		//https://wiki.jenkins.io/display/JENKINS/Credentials%20Binding%20Plugin
+		echo "Connecting to Jenkins Server with ${USERNAME} and ${PASSWORD}"
+	  }
+        }
+     } 
    }//stages
    
-   post('Post Execution Steps') {
-     always{
+   post {
+     always {
 	echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post handler - always >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
         echo 'Job execution completed...'		
      }
      
-     success{
+     success {
         echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post success handler >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'        
 	mail to: 'maroof.siddique2013@gmail.com',
         subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${env.BRANCH_NAME} - ${JOB_ENV} - ${currentBuild.result} !",
         body: "Please find the build and console log details at ${env.BUILD_URL}" 
      }
      
-     failure{
+     failure {
        echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post failure handler >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'      
        mail to: 'maroof.siddique2013@gmail.com',
        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${env.BRANCH_NAME} - ${JOB_ENV} - ${currentBuild.result} !",
