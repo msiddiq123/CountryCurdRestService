@@ -10,14 +10,14 @@ pipeline {
    environment {
      GIT_CREDENTIALS = credentials('global-git-credentials')
      JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')
-     BUILD_ENV = 'dev,sit,uat,pre,prod'     
+     BUILD_ENV = 'dev, OR sit OR uat OR pre OR prod'     
    }
    
    //retry(2)
    //https://www.jenkins.io/doc/book/pipeline/syntax/#options
    options {     
-     timestamps(),
-     timeout(time: 15, unit: 'MINUTES'),     
+     timestamps()
+     timeout(time: 15, unit: 'MINUTES')   
      buildDiscarder(logRotator(numToKeepStr: '15'))     
    }
 
