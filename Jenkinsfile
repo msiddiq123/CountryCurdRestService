@@ -52,11 +52,14 @@ pipeline {
 	  bat 'mvn clean install -Dmaven.test.skip=true'
 	  bat 'docker images -a'
 	  
-	  docker.withRegistry('https://rgistry.hub.docker.com/', 'global-docker-credentials') {
-            def customImage = docker.build("msiddiq123/country-curd-rest-service:${BUILD_ENV}-${env.BUILD_ID}")
-            /* Push the container to the custom Registry */
-           customImage.push()
-          }
+	  script{
+	     docker.withRegistry('https://rgistry.hub.docker.com/', 'global-docker-credentials') {
+               def customImage = docker.build("msiddiq123/country-curd-rest-service:${BUILD_ENV}-${env.BUILD_ID}")
+               /* Push the container to the custom Registry */
+               customImage.push()
+             }
+	  }
+	  
 	  
         }
      }
