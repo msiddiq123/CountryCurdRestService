@@ -53,7 +53,7 @@ pipeline {
 	  bat 'docker images -a'
 	  
 	  script{
-	     docker.withRegistry('https://rgistry.hub.docker.com/', 'global-docker-credentials') {
+	     docker.withRegistry('https://registry.hub.docker.com/', 'global-docker-credentials') {
                def customImage = docker.build("msiddiq123/country-curd-rest-service:${BUILD_ENV}-${env.BUILD_ID}")
                /* Push the container to the custom Registry */
                customImage.push()
