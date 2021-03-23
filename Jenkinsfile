@@ -13,10 +13,11 @@ pipeline {
      BUILD_ENV = 'dev,sit,uat,pre,prod'     
    }
    
+   //retry(2)
+   //https://www.jenkins.io/doc/book/pipeline/syntax/#options
    options {     
      timestamps()
-     timeout(time: 15, unit: 'MINUTES')
-     //retry(2)
+     timeout(time: 15, unit: 'MINUTES')     
      buildDiscarder(logRotator(numToKeepStr: '15'))
      copyArtifactPermission(env.JOB_NAME)
    }
