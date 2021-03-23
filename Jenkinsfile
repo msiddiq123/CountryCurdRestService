@@ -9,8 +9,7 @@ pipeline {
   
   //Here we are assuming that the maven build and docker build are happening in the same server where Jenkins is installed
    parameters {
-     choice(name: 'build-environment', choices: ['defalut', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.')
-  
+     choice(name: 'buildEnvironment', choices: ['defalut', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.')
    }
    
    environment {
@@ -33,7 +32,7 @@ pipeline {
      stage('Prepare Build Job') {
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Prepare Build Job >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
-          echo "Choose environment between ${BUILD_ENV} - ${params.build-environment}"
+          echo "Choose environment between ${BUILD_ENV} - ${params.buildEnvironment}"
         }
      }
      
