@@ -50,6 +50,7 @@ pipeline {
           echo "M2_HOME ====> ${M2_HOME}"
           bat 'mvn -version' 
 	  bat 'mvn clean install -Dmaven.test.skip=true'
+	  bat 'docker images -a'
         }
      }
      
