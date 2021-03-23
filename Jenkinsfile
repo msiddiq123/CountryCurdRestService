@@ -53,18 +53,18 @@ pipeline {
      
      success {
         echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post success handler >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'        
+	emailext attachLog: true, attachmentsPattern: 'generatedFile.txt', 
 	mail to: 'maroof.siddique2013@gmail.com',
         subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${env.BRANCH_NAME} - ${JOB_ENV} - ${currentBuild.result} !",
-        body: "Please find the build and console log details at ${env.BUILD_URL}",
-        attachLog: true, attachmentsPattern: 'generatedFile.txt'	
+        body: "Please find the build and console log details at ${env.BUILD_URL}"        
      }
      
      failure {
        echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post failure handler >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'      
+       emailext attachLog: true, attachmentsPattern: 'generatedFile.txt', 
        mail to: 'maroof.siddique2013@gmail.com',
        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${env.BRANCH_NAME} - ${JOB_ENV} - ${currentBuild.result} !",
-       body: "Please find the build and console log details at ${env.BUILD_URL}",
-       attachLog: true, attachmentsPattern: 'generatedFile.txt'       
+       body: "Please find the build and console log details at ${env.BUILD_URL}"
      }  
    }//post
       
