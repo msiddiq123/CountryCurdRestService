@@ -54,7 +54,7 @@ pipeline {
      success {
         echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post success handler >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'        
 	emailext attachLog: true,
-	mail to: 'maroof.siddique2013@gmail.com',
+	to: 'maroof.siddique2013@gmail.com',
         subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${env.BRANCH_NAME} - ${JOB_ENV} - ${currentBuild.result} !",
         body: "Please find the build and console log details at ${env.BUILD_URL}"        
      }
@@ -62,7 +62,7 @@ pipeline {
      failure {
        echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing post failure handler >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'      
        emailext attachLog: true,
-       mail to: 'maroof.siddique2013@gmail.com',
+       to: 'maroof.siddique2013@gmail.com',
        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${env.BRANCH_NAME} - ${JOB_ENV} - ${currentBuild.result} !",
        body: "Please find the build and console log details at ${env.BUILD_URL}"
      }  
