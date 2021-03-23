@@ -33,7 +33,7 @@ pipeline {
      stage('Prepare Build Job') {
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Prepare Build Job >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
-          echo "Choose environment between ${BUILD_ENV} - ${build-environment}"
+          echo "Choose environment between ${BUILD_ENV} - ${params.build-environment}"
         }
      }
      
