@@ -27,10 +27,8 @@
 	  bat 'mvn -version'
         }
      }
-     
-      
+           
    }//stages
-   
    
    
 }//pipeline
