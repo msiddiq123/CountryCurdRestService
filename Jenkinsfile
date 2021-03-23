@@ -18,7 +18,6 @@ pipeline {
      stage('Build Project') {
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build Project >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
-	  bat 'echo >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build Project----1 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
           //Using Jenkins Environment Variable
 	  echo "Building and deploying in Jenkins Server with ${JENKINS_CREDENTIALS}"
 	  echo "PATH ====> ${PATH}"
