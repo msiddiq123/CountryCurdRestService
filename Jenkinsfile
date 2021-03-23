@@ -7,6 +7,12 @@ pipeline {
      maven 'Jenkins-Maven'
    }
   
+  //Here we are assuming that the maven build and docker build are happening in the same server where Jenkins is installed
+   parameters {
+     choice(name: 'build-environment', choices: ['defalut', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.')
+  
+   }
+   
    environment {
      GIT_CREDENTIALS = credentials('global-git-credentials')
      JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')
@@ -27,18 +33,24 @@ pipeline {
      stage('Prepare Build Job') {
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Prepare Build Job >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
-          echo "Choose environment between ${BUILD_ENV}"
+          echo "Choose environment between ${BUILD_ENV} - ${build-environment}"
         }
      }
      
      stage('Build Project') {
+	when {               
+           expression { 
+		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'dev' 
+	   }
+        }
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Build Project >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
           //Using Jenkins Environment Variable
 	  echo "Building and deploying in Jenkins Server with ${JENKINS_CREDENTIALS}"
 	  echo "PATH ====> ${PATH}"
           echo "M2_HOME ====> ${M2_HOME}"
-          bat 'mvn -version' 	  
+          bat 'mvn -version' 
+	  bat 'mvn clean install -Dmaven.test.skip=true'
         }
      }
      
