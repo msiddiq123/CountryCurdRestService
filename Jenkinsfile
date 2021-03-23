@@ -9,13 +9,13 @@ pipeline {
   
   //Here we are assuming that the maven build and docker build are happening in the same server where Jenkins is installed
    parameters {
-     choice(name: 'buildEnvironment', choices: ['defalut', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.')
+     choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.')
    }
    
    environment {
      GIT_CREDENTIALS = credentials('global-git-credentials')
      JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')
-     BUILD_ENV = 'dev OR sit OR uat OR pre OR prod'     
+     BUILD_ENV = ${params.buildEnvironment}  
    }
    
    //retry(2) 
@@ -32,14 +32,14 @@ pipeline {
      stage('Prepare Build Job') {
 	steps {
 	  echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Executing stage - Prepare Build Job >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
-          echo "Choose environment between ${BUILD_ENV} - ${params.buildEnvironment}"
+          echo "Choose environment between ${BUILD_ENV} >> ${params.buildEnvironment}"
         }
      }
      
      stage('Build Project') {
 	when {               
            expression { 
-		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'dev' 
+		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'release' 
 	   }
         }
 	steps {
@@ -56,7 +56,7 @@ pipeline {
      stage('Build Docker Image') { 
         when {               
            expression { 
-		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'dev' 
+		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'release' 
 	   }
         }     
 	steps {
