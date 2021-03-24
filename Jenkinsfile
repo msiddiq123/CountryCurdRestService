@@ -84,7 +84,7 @@ pipeline {
 		echo "Connecting to Jenkins Server with ${USERNAME} and ${PASSWORD}"
 	  }
 	  
-	  script{
+	  //script{
 	     //Ensure that docker(or docker swarm is configured) engine is installed in the Jenkins server and the Docker service is running.
 	     //https://www.jenkins.io/doc/book/pipeline/docker/
 	     //docker.withRegistry(DOCKER_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
@@ -95,7 +95,7 @@ pipeline {
                  //def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
                  //customImage.push()
                //}	     
-	  }//script
+	  //}//script
 	  
 	  bat 'docker images -a'
 
