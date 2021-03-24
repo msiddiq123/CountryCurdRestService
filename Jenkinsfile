@@ -49,8 +49,7 @@ pipeline {
 	  echo 'Checking maven version...'
           bat 'mvn -version' 
 	  echo 'Checking docker version...'
-	  bat 'docker -v'	  
-	  bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
+	  bat 'docker -v'	  	  
         }//steps
      }//stage
      
@@ -98,12 +97,13 @@ pipeline {
                //}	     
 	  //}//script
 	  
-	  bat 'docker images -a'
+	  //bat 'docker images -a'
+	  bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
 
 	  //FINDSTR 'id' is the equivalent of grep in Linux
           //bat 'docker rmi ${NEXUS_REGISTRY_IMAGE}'
-	  bat 'docker pull ${NEXUS_REGISTRY_IMAGE}'
-	  bat 'docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}'
+	  bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
+	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"
         }//steps
      }//stage 
      
