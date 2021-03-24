@@ -24,10 +24,8 @@ pipeline {
      NEXUS_REGISTRY_URL = 'http://192.168.1.35:9191/'
      NEXUS_REGISTRY_CREDENTIALS = 'global-nexus-registry-credentials'
      //NEXUS_REGISTRY_IMAGE = "192.168.1.35:9191/country-curd-rest-service:img-${env.BUILD_ID}"
-     NEXUS_REGISTRY_IMAGE = "192.168.1.35:9191/country-curd-rest-service:img-44"
-     
-     CONTAINER_ID=""
-     
+     NEXUS_REGISTRY_IMAGE = "192.168.1.35:9191/country-curd-rest-service:img-44"    
+   
    }
    
    //retry(2) 
@@ -72,9 +70,10 @@ pipeline {
 	  //xargs
 	  bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE} > cidfile"
 	  bat 'type cidfile'
-	  bat 'set /p myvar=<cidfile'	  
+	  bat 'set /p myvar= < cidfile'	  
 	  bat 'echo %myvar%'
 	  bat "echo %myvar%" 	  
+	  bat 'docker stop %myvar%'
 	  
 	  //bat "set CONTAINER_ID=echo %myvar%"
 	  //echo "CONTAINER_ID =======> ${CONTAINER_ID}"
