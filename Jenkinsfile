@@ -24,7 +24,8 @@ pipeline {
      NEXUS_REGISTRY_URL = 'http://192.168.1.35:9191/'
      NEXUS_REGISTRY_CREDENTIALS = 'global-nexus-registry-credentials'
      //NEXUS_REGISTRY_IMAGE = "192.168.1.35:9191/country-curd-rest-service:img-${env.BUILD_ID}"
-     NEXUS_REGISTRY_IMAGE = "192.168.1.35:9191/country-curd-rest-service:img-44" 	     
+     NEXUS_REGISTRY_IMAGE = "192.168.1.35:9191/country-curd-rest-service:img-44"
+     
    }
    
    //retry(2) 
@@ -49,7 +50,12 @@ pipeline {
 	  echo 'Checking maven version...'
           bat 'mvn -version' 
 	  echo 'Checking docker version...'
-	  bat 'docker -v'	  	  
+	  bat 'docker -v'
+	  sh '''#!/bin/bash
+                echo "Hello from bash"
+                echo "Who I'm $SHELL"
+          '''	
+	  
         }//steps
      }//stage
      
@@ -102,8 +108,8 @@ pipeline {
 
 	  //FINDSTR 'id' is the equivalent of grep in Linux
           //bat 'docker rmi ${NEXUS_REGISTRY_IMAGE}'
-	  bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
-	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"
+	  //bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
+	  //bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"
         }//steps
      }//stage 
      
