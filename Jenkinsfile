@@ -52,12 +52,24 @@ pipeline {
 	  echo 'Checking docker version...'
 	  bat 'docker -v'
 	  
-	  shell('''#!/bin/bash
-                set -e
-		set -x
-		echo "Hello from bash"
-                echo "Who I'm $SHELL"
-         ''')
+	  //https://stackoverflow.com/questions/35043665/change-windows-shell-in-jenkins-from-cygwin-to-git-bash-msys#:~:text=Go%20to%20Manage%20Jenkins%20%3E%20Configure,the%20Execute%20shell%20build%20step.&text=Note%3A%20This%20won't%20work,agents%20(JENKINS%2D38211).
+	  //shell('''#!/bin/bash
+                //set -e
+		//set -x
+		//echo "Hello from bash"
+                //echo "Who I'm $SHELL"
+         //''')
+	 //-----OR----
+	 //https://www.jenkins.io/doc/pipeline/tour/running-multiple-steps/
+	 //sh 'echo "Hello World"'
+         //sh '''
+               //echo "Multiline shell steps works too"
+               //ls -lah
+          //'''
+	  
+	  bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE} > cidfile"
+	  bat 'type cidfile'
+	 
         }//steps
      }//stage
      
