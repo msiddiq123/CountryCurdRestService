@@ -50,6 +50,7 @@ pipeline {
           bat 'mvn -version' 
 	  echo 'Checking docker version...'
 	  bat 'docker -v'	  
+	  bat 'docker image ls $NEXUS_REGISTRY_IMAGE'
         }//steps
      }//stage
      
