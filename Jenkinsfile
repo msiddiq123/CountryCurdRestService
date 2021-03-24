@@ -74,9 +74,7 @@ pipeline {
 	  bat 'set /p myvar= < cidfile'
 	  bat 'echo %myvar%'
 	  bat "echo %myvar%"
-	  echo %myvar%
-	  stdout = bat(returnStdout: true, script: 'echo %myvar%')
-	  println("stdout ################ " + stdout + " ####################")
+	  echo %myvar%	 
 	  
 	  //bat "set CONTAINER_ID=echo %myvar%"
 	  //echo "CONTAINER_ID =======> ${CONTAINER_ID}"
