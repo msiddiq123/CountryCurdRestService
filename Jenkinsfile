@@ -52,16 +52,12 @@ pipeline {
 	  echo 'Checking docker version...'
 	  bat 'docker -v'
 	  
-	  //shell('''#!/bin/bash -e
-                //echo "Hello from bash"
-                //echo "Who I'm $SHELL"
-         //''')
-         script{
-	    sh echo "Hello from bash"
-	    sh echo "Who I'm $SHELL"
-	    sh "echo $M2_HOME"
-         }	 
-	  
+	  shell('''#!/bin/bash
+                set -e
+		set -x
+		echo "Hello from bash"
+                echo "Who I'm $SHELL"
+         ''')
         }//steps
      }//stage
      
