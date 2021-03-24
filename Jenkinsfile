@@ -18,8 +18,12 @@ pipeline {
      BUILD_ENV = "${params.buildEnvironment}"  
      
      DOCKER_REGISTRY_URL = 'https://registry.hub.docker.com/'
-     DOCKER_REGISTRY_CREDENTIALS = 'global-docker-credentials'
-     DOCKER_REGISTRY_IMAGE = "msiddiq123/country-curd-rest-service:img-${env.BUILD_ID}"     
+     DOCKER_REGISTRY_CREDENTIALS = 'global-docker-registry-credentials'
+     DOCKER_REGISTRY_IMAGE = "msiddiq123/country-curd-rest-service:img-${env.BUILD_ID}" 
+     
+     NEXUS_REGISTRY_URL = 'http://192.168.1.35:9191/'
+     NEXUS_REGISTRY_CREDENTIALS = 'global-nexus-registry-credentials'
+     NEXUS_REGISTRY_IMAGE = "192.168.1.35:9191/country-curd-rest-service:img-${env.BUILD_ID}" 	
    }
    
    //retry(2) 
@@ -33,6 +37,7 @@ pipeline {
 
    //NB:- In Linux we need to execute sh 'echo Executing stage - Build & Create Artifact...' /  sh 'mvn clean install' and in windows we can use bat like bat 'mvn -version'
    stages {
+   
      stage('Prepare Build Job') {
 	steps {
 	  echo '#################################################### Executing stage - Prepare Build Job ####################################################'
@@ -44,8 +49,8 @@ pipeline {
           bat 'mvn -version' 
 	  echo 'Checking docker version...'
 	  bat 'docker -v'	  
-        }
-     }
+        }//steps
+     }//stage
      
      stage('Build Project') {
 	when {               
@@ -57,8 +62,8 @@ pipeline {
 	  echo '#################################################### Executing stage - Build Project ####################################################'        
 	  bat 'mvn clean install -Dmaven.test.skip=true'
           bat 'dir /p'	  
-        }
-     }
+        }//steps
+     }//stage
      
      stage('Build Docker Image') { 
         when {               
@@ -81,15 +86,20 @@ pipeline {
 	  script{
 	     //Ensure that docker(or docker swarm is configured) engine is installed in the Jenkins server and the Docker service is running.
 	     //https://www.jenkins.io/doc/book/pipeline/docker/
-	     docker.withRegistry(DOCKER_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
-                def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
-                customImage.push()
-             }
-	  }
+	     //docker.withRegistry(DOCKER_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
+                //def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
+                //customImage.push()
+             //}
+	       docker.withRegistry(NEXUS_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
+                 def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
+                 customImage.push()
+               }	     
+	  }//script
 	  
 	  bat 'docker images -a'	  
-        }
-     } 
+        }//steps
+     }//stage 
+     
    }//stages
    
    post {
