@@ -51,10 +51,16 @@ pipeline {
           bat 'mvn -version' 
 	  echo 'Checking docker version...'
 	  bat 'docker -v'
-	  shell('''#!/bin/bash -e
-                echo "Hello from bash"
-                echo "Who I'm $SHELL"
-          ''')	
+	  
+	  //shell('''#!/bin/bash -e
+                //echo "Hello from bash"
+                //echo "Who I'm $SHELL"
+         //''')
+         script{
+	    sh echo "Hello from bash"
+	    sh echo "Who I'm $SHELL"
+	    sh "echo $M2_HOME"
+         }	 
 	  
         }//steps
      }//stage
