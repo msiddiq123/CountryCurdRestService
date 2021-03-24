@@ -75,9 +75,7 @@ pipeline {
 	  bat 'echo %myvar%'
 	  bat "echo %myvar%"
 	  bat "set CONTAINER_ID=echo %myvar%"
-	  echo "CONTAINER_ID =======> ${CONTAINER_ID}"
-	  CONTAINER_ID = bat "%myvar%"
-	  echo "CONTAINER_ID =======> ${CONTAINER_ID}"
+	  echo "CONTAINER_ID =======> ${CONTAINER_ID}"	  
 	 
         }//steps
      }//stage
