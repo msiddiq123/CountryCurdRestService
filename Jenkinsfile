@@ -23,7 +23,8 @@ pipeline {
      
      NEXUS_REGISTRY_URL = 'http://192.168.1.35:9191/'
      NEXUS_REGISTRY_CREDENTIALS = 'global-nexus-registry-credentials'
-     NEXUS_REGISTRY_IMAGE = "192.168.1.35:9191/country-curd-rest-service:img-${env.BUILD_ID}" 	
+     //NEXUS_REGISTRY_IMAGE = "192.168.1.35:9191/country-curd-rest-service:img-${env.BUILD_ID}"
+     NEXUS_REGISTRY_IMAGE = "192.168.1.35:9191/country-curd-rest-service:img-44" 	     
    }
    
    //retry(2) 
@@ -90,13 +91,18 @@ pipeline {
                 //def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
                 //customImage.push()
              //}
-	       docker.withRegistry(NEXUS_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
-                 def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
-                 customImage.push()
-               }	     
+	       //docker.withRegistry(NEXUS_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
+                 //def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
+                 //customImage.push()
+               //}	     
 	  }//script
 	  
-	  bat 'docker images -a'	  
+	  bat 'docker images -a'
+
+	  //FINDSTR 'id' is the equivalent of grep in Linux
+          //bat 'docker rmi ${NEXUS_REGISTRY_IMAGE}'
+	  bat 'docker pull ${NEXUS_REGISTRY_IMAGE}'
+	  bat 'docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}'
         }//steps
      }//stage 
      
