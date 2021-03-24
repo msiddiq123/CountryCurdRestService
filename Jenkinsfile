@@ -44,17 +44,17 @@ pipeline {
 	steps {
 	  echo '#################################################### Executing stage - Prepare Build Job ####################################################'
 	  echo 'Reading Jenkinsfile...'
-	  bat 'type Jenkinsfile'
-          echo "M2_HOME ====> ${M2_HOME}"
-	  echo "PATH ====> ${PATH}"
+	  //bat 'type Jenkinsfile'
+          //echo "M2_HOME ====> ${M2_HOME}"
+	  //echo "PATH ====> ${PATH}"
 	  echo 'Checking maven version...'
           bat 'mvn -version' 
 	  echo 'Checking docker version...'
 	  bat 'docker -v'
-	  sh '''#!/bin/bash
+	  shell('''#!/bin/bash -e
                 echo "Hello from bash"
                 echo "Who I'm $SHELL"
-          '''	
+          ''')	
 	  
         }//steps
      }//stage
