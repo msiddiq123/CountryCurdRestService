@@ -78,7 +78,7 @@ pipeline {
 	     set appecho="This is testing for echo"
 	     echo %appecho%
 	     
-	     docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE} > cidfile
+	     "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE} > cidfile"
 	     type cidfile
 	     set /p myvar=<cidfile
 	     echo %myvar%
