@@ -10,6 +10,7 @@ pipeline {
    //Here we are assuming that the maven build and docker build are happening in the same server where Jenkins is installed
    parameters {
      choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.')
+      bat "docker stop \$(docker ps -aqf ancestor=192.168.1.35:9191/country-curd-rest-service:img-44)"
    }
    
    environment {
@@ -56,6 +57,10 @@ pipeline {
           bat 'mvn -version' 
 	  echo 'Checking docker version...'
 	  bat 'docker -v'
+	  script {
+                    currentBuild.displayName = "The name."
+                    currentBuild.description = "The best description."
+                }
 	  
 	  //https://stackoverflow.com/questions/35043665/change-windows-shell-in-jenkins-from-cygwin-to-git-bash-msys#:~:text=Go%20to%20Manage%20Jenkins%20%3E%20Configure,the%20Execute%20shell%20build%20step.&text=Note%3A%20This%20won't%20work,agents%20(JENKINS%2D38211).
 	  //-----For Linux----
@@ -92,8 +97,7 @@ pipeline {
 	steps {
 	  echo '#################################################### Executing stage - Build Project ####################################################'        
 	  bat 'mvn clean install -Dmaven.test.skip=true'
-          bat 'dir /p'	         
-          bat "docker stop \$(docker ps -aqf ancestor=192.168.1.35:9191/country-curd-rest-service:img-44)"
+          bat 'dir /p'          
 	  
         }//steps
      }//stage
@@ -130,6 +134,7 @@ pipeline {
                //}	     
 	  //}//script
 	  
+	  
 	  //bat "docker images -a"
 	  //bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
 	  //bat "docker rmi ${NEXUS_REGISTRY_IMAGE}" 
@@ -144,7 +149,6 @@ pipeline {
         }     
 	steps {
 	  echo '#################################################### Executing stage - Deploy Docker Image ####################################################'
-          
 	  //bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
 	  //bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
           //bat "docker ps -a"	  
