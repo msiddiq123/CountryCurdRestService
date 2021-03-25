@@ -9,8 +9,7 @@ pipeline {
   
    //Here we are assuming that the maven build and docker build are happening in the same server where Jenkins is installed
    parameters {
-     choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.')
-      bat "docker stop \$(docker ps -aqf ancestor=192.168.1.35:9191/country-curd-rest-service:img-44)"
+     choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.')     
    }
    
    environment {
