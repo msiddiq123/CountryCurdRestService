@@ -9,8 +9,7 @@ pipeline {
   
    //Here we are assuming that the maven build and docker build are happening in the same server where Jenkins is installed
    parameters {
-     choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n Run docker stop <container-id> and docker rmi <container-id> before triggering the build.')
-     //choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.')
+     choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n NOTE:- Run docker stop <container-id> and docker rmi <container-id> before triggering the build.')     
    }
    
    environment {
@@ -58,9 +57,13 @@ pipeline {
 	  echo 'Checking docker version...'
 	  bat 'docker -v'
 	  script {
-                    currentBuild.displayName = "The name."
-                    currentBuild.description = "The best description."
-                }
+		pom = readMavenPom(file: './pom.xml')
+		projectArtifactId = pom.getArtifactId()
+		projectGroupId = pom.getGroupId()
+		projectVersion = pom.getVersion()
+		projectName = pom.getName()
+	  }
+	   echo "Building ${projectArtifactId}:${projectVersion}"
 	  
 	  //https://stackoverflow.com/questions/35043665/change-windows-shell-in-jenkins-from-cygwin-to-git-bash-msys#:~:text=Go%20to%20Manage%20Jenkins%20%3E%20Configure,the%20Execute%20shell%20build%20step.&text=Note%3A%20This%20won't%20work,agents%20(JENKINS%2D38211).
 	  //-----For Linux----
