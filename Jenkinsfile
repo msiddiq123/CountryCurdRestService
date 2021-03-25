@@ -38,10 +38,7 @@ pipeline {
      NEXUS_IMAGE_NAME = "192.168.1.35:9191/country-curd-rest-service"     
      //NEXUS_IMAGE_TAG = "img-${env.BUILD_ID}"
      NEXUS_IMAGE_TAG = "img-${PROJECT_VERSION}"
-     NEXUS_REGISTRY_IMAGE = "${NEXUS_IMAGE_NAME}:${NEXUS_IMAGE_TAG}"
-     
-     bat ''' echo off 
-     '''
+     NEXUS_REGISTRY_IMAGE = "${NEXUS_IMAGE_NAME}:${NEXUS_IMAGE_TAG}"     
    }
    
    options {     
@@ -157,6 +154,7 @@ pipeline {
 	  //bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
           //bat "docker ps -a"	  
 	  //bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE}"
+	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 192.168.1.35:9191/country-curd-rest-service:img-44"
         }//steps
      }//stage 
      
