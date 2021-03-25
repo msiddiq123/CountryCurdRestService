@@ -52,7 +52,7 @@ pipeline {
    
      stage('Prepare Build Job') {
 	steps {
-	  @echo off
+	  echo off
 	  echo '################################## Executing stage - Prepare Build Job ##################################'
 	  //echo 'Reading Jenkinsfile...'
 	  //bat 'type Jenkinsfile'
@@ -96,7 +96,6 @@ pipeline {
 	   }
         }
 	steps {
-	  @echo off
 	  echo '################################## Executing stage - Build Project ##################################' 
           echo "Buildng ====> ${PROJECT_GROUP_ID}:${PROJECT_ARTIFACT_ID}:${PROJECT_VERSION}:${PROJECT_PACKAGING}" 	  
 	  bat 'mvn clean install -Dmaven.test.skip=true'
@@ -112,7 +111,6 @@ pipeline {
 	   }
         }     
 	steps {
-	  @echo off
 	  echo '################################## Executing stage - Build Docker Image ##################################'
           //echo 'Reading Dockerfile...'
 	  //bat 'type Dockerfile'	  
@@ -151,8 +149,7 @@ pipeline {
 		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'release' 
 	   }
         }     
-	steps {
-	  @echo off
+	steps {	  
 	  echo '################################## Executing stage - Deploy Docker Image ##################################'
 	  //bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
 	  //bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
@@ -166,7 +163,6 @@ pipeline {
    post {
      //https://plugins.jenkins.io/email-ext/
      always {
-        @echo off
 	echo '################################## Executing post [always] handler ##################################'
        
         emailext attachLog: true,
@@ -178,13 +174,11 @@ pipeline {
      }
      
      success {
-        @echo off
         echo '################################## Executing post [success] handler ##################################'        
 	echo 'Job execution succeded...'
      }
      
      failure {
-       @echo off
        echo '################################## Executing post [failure] handler ##################################'
        echo 'Job execution failed...'
      }  
