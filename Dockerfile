@@ -4,15 +4,26 @@
 	#                          - NB:-Your email and your docker id are 2 separate things. It looks like you can use your email to log in the site but not the CLI. 
 	#3)Docker Build Image - docker build -t msiddiq123/country-curd-rest-service:dev-1.0 .
 	#4)Docker List Images - docker image ls  OR docker images -a
+	                      - docker image ls msiddiq123/country-curd-rest-service --format '{{.ID}}'
+			      - docker image ls msiddiq123/country-curd-rest-service:dev-1.0 --format '{{.ID}}'
+			      - docker images -a 192.168.1.35:9191/country-curd-rest-service --format '{{.ID}}'
+                              - docker images -a 192.168.1.35:9191/country-curd-rest-service:img-44 --format '{{.ID}}'
 	#5)Docker Hub Push - docker push msiddiq123/country-curd-rest-service:dev-1.0
 	#6)Docker Image Delete (from Local) - docker rmi msiddiq123/country-curd-rest-service:dev-1.0
 	#7)Docker Hub Pull - docker pull msiddiq123/country-curd-rest-service:dev-1.0
 	#8)Docker Run Image - docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 msiddiq123/country-curd-rest-service:dev-1.0
 	#9)Docker Container Status - docker ps -a
+	                           - docker ps -aq --filter status=running --format {{.ID}}
+				   - docker ps -a --filter status=running
+				   - docker ps -a --filter status=exited
+	                           - docker ps -aqf ancestor=msiddiq123/country-curd-rest-service:dev-1.0
+                                   - docker ps -aqf ancestor=0af19869acc3
 	#10)Docker Container Login - docker exec -it bb619399082d /bin/bash
 	#11)Docker Conatiner Resart - docker restart --time=10 bb619399082d
 	#12)Docker Container Stop - docker stop bb619399082d
-	#13)Docker Conatiner Delete - docker rm bb619399082d 
+	                          - docker stop $(docker ps -aqf ancestor=msiddiq123/country-curd-rest-service:dev-1.0)
+	#13)Docker Conatiner Delete - docker rm bb619399082d
+                                    - docker rm $(docker ps -aqf ancestor=msiddiq123/country-curd-rest-service:dev-1.0)	
 	#14)Docker Image Delete - docker rmi msiddiq123/country-curd-rest-service:dev-1.0
 ############################################################################################################################################################
 
