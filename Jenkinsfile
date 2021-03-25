@@ -70,7 +70,14 @@ pipeline {
 	  //xargs
 	  bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE} > cidfile"
 	  bat 'type cidfile'
-	  bat 'set /p myvar=<cidfile'	  
+	  bat "set appdir=This is testing for echo"
+	  bat "echo %appdir%"
+	  bat ''' 
+	     set appecho=This is testing for echo 
+	     echo %appecho% 
+	  '''
+	  
+	  bat "set /p myvar=<cidfile"
 	  bat ''' echo %myvar% '''
 	  bat "echo %myvar%" 	  
 	  
