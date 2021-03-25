@@ -121,8 +121,8 @@ pipeline {
                }	     
 	  }//script
 	  
-	  //bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
-	  bat "docker images -a"
+	  //bat "docker images -a"
+	  bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
 	  bat "docker rmi ${NEXUS_REGISTRY_IMAGE}" 
         }//steps
      }//stage 
@@ -138,7 +138,8 @@ pipeline {
           
 	  bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
 	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
-          bat "docker ps -a"	  
+          //bat "docker ps -a"	  
+	  bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE}"
         }//steps
      }//stage 
      
