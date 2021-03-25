@@ -39,6 +39,9 @@ pipeline {
      //NEXUS_IMAGE_TAG = "img-${env.BUILD_ID}"
      NEXUS_IMAGE_TAG = "img-${PROJECT_VERSION}"
      NEXUS_REGISTRY_IMAGE = "${NEXUS_IMAGE_NAME}:${NEXUS_IMAGE_TAG}"
+     
+     bat ''' echo off 
+     '''
    }
    
    options {     
@@ -51,8 +54,7 @@ pipeline {
    stages {
    
      stage('Prepare Build Job') {
-	steps {
-	  bat ''' echo off 
+	steps { 
 	   echo '################################## Executing stage - Prepare Build Job ##################################'
 	  
 	  //echo 'Reading Jenkinsfile...'
@@ -60,10 +62,10 @@ pipeline {
           echo "M2_HOME ====> ${M2_HOME}"
 	  echo "PATH ====> ${PATH}"
 	  echo 'Checking maven version...'
-          mvn -version //bat 'mvn -version' 
+          bat 'mvn -version' 
 	  echo 'Checking docker version...'
-	  docker -v //bat 'docker -v'	  
-	 ''' 
+	  bat 'docker -v'	  
+
 	  //https://stackoverflow.com/questions/35043665/change-windows-shell-in-jenkins-from-cygwin-to-git-bash-msys#:~:text=Go%20to%20Manage%20Jenkins%20%3E%20Configure,the%20Execute%20shell%20build%20step.&text=Note%3A%20This%20won't%20work,agents%20(JENKINS%2D38211).
 	  //-----For Linux----
 	  //shell('''#!/bin/bash
@@ -97,13 +99,10 @@ pipeline {
 	   }
         }
 	steps {
-	  bat ''' echo off 
 	  echo '################################## Executing stage - Build Project ##################################' 
           echo "Buildng ====> ${PROJECT_GROUP_ID}:${PROJECT_ARTIFACT_ID}:${PROJECT_VERSION}:${PROJECT_PACKAGING}" 	  
-	  mvn clean install -Dmaven.test.skip=true //bat 'mvn clean install -Dmaven.test.skip=true'
-          dir /p //bat 'dir /p' 
-          '''	  
-	  
+	  bat 'mvn clean install -Dmaven.test.skip=true'
+          bat 'dir /p'           	  
         }//steps
      }//stage
      
