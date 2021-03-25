@@ -30,7 +30,14 @@ pipeline {
      //NEXUS_IMAGE_TAG = "img-${env.BUILD_ID}"
      NEXUS_IMAGE_TAG = "rel-0.0.1"
      NEXUS_REGISTRY_IMAGE = "${NEXUS_IMAGE_NAME}:${NEXUS_IMAGE_TAG}"
-   
+     
+     pom = readMavenPom(file: 'pom.xml')
+		projectArtifactId = pom.getArtifactId()
+		projectGroupId = pom.getGroupId()
+		projectVersion = pom.getVersion()
+		projectPackaging = pom.getPackaging()
+		projectName = pom.getName()
+		projectDescription = pom.getDescription()
    }
    
    //retry(2) 
@@ -47,7 +54,7 @@ pipeline {
    
      stage('Prepare Build Job') {
 	steps {
-	  echo '#################################################### Executing stage - Prepare Build Job ####################################################'
+	  echo '################################## Executing stage - Prepare Build Job ##################################'
 	  //echo 'Reading Jenkinsfile...'
 	  //bat 'type Jenkinsfile'
           echo "M2_HOME ====> ${M2_HOME}"
@@ -56,14 +63,10 @@ pipeline {
           bat 'mvn -version' 
 	  echo 'Checking docker version...'
 	  bat 'docker -v'
-	  script {
-		pom = readMavenPom(file: './pom.xml')
-		projectArtifactId = pom.getArtifactId()
-		projectGroupId = pom.getGroupId()
-		projectVersion = pom.getVersion()
-		projectName = pom.getName()
-	  }
-	   echo "Building ${projectArtifactId}:${projectVersion}"
+	  
+		
+	 
+	   echo "POM DETAILS +++++++++++++ ${projectArtifactId}:${projectVersion}"
 	  
 	  //https://stackoverflow.com/questions/35043665/change-windows-shell-in-jenkins-from-cygwin-to-git-bash-msys#:~:text=Go%20to%20Manage%20Jenkins%20%3E%20Configure,the%20Execute%20shell%20build%20step.&text=Note%3A%20This%20won't%20work,agents%20(JENKINS%2D38211).
 	  //-----For Linux----
@@ -98,7 +101,7 @@ pipeline {
 	   }
         }
 	steps {
-	  echo '#################################################### Executing stage - Build Project ####################################################'        
+	  echo '################################## Executing stage - Build Project ##################################'        
 	  bat 'mvn clean install -Dmaven.test.skip=true'
           bat 'dir /p'          
 	  
@@ -112,7 +115,7 @@ pipeline {
 	   }
         }     
 	steps {
-	  echo '#################################################### Executing stage - Build Docker Image ####################################################'
+	  echo '################################## Executing stage - Build Docker Image ##################################'
           //echo 'Reading Dockerfile...'
 	  //bat 'type Dockerfile'	  
 	  
@@ -151,7 +154,7 @@ pipeline {
 	   }
         }     
 	steps {
-	  echo '#################################################### Executing stage - Deploy Docker Image ####################################################'
+	  echo '################################## Executing stage - Deploy Docker Image ##################################'
 	  //bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
 	  //bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
           //bat "docker ps -a"	  
@@ -164,23 +167,23 @@ pipeline {
    post {
      //https://plugins.jenkins.io/email-ext/
      always {
-	echo '#################################################### Executing post [always] handler ####################################################'
+	echo '################################## Executing post [always] handler ##################################'
        
         emailext attachLog: true,
 	compressLog: true,
 	to: 'maroof.siddique2013@gmail.com',
         subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${env.BRANCH_NAME} - ${BUILD_ENV} - ${currentBuild.result} !",
 	mimeType: 'text/plain',
-        body: "Hi Team, \n\n Please find the build and console log details below:- \n Job Name >> ${env.JOB_NAME} \n Build No. >> ${env.BUILD_NUMBER} \n GIT Branch >> ${env.BRANCH_NAME} \n Build Environment >> ${BUILD_ENV} \n Build Status >> ${currentBuild.result} \n Please find the build and console log details at ${env.BUILD_URL} \n\n Thanks,\n Jenkins Build Team"     	
+        body: "Hi Team, version - ${projectVersion} \n\n Please find the build and console log details below:- \n Job Name >> ${env.JOB_NAME} \n Build No. >> ${env.BUILD_NUMBER} \n GIT Branch >> ${env.BRANCH_NAME} \n Build Environment >> ${BUILD_ENV} \n Build Status >> ${currentBuild.result} \n Please find the build and console log details at ${env.BUILD_URL} \n\n Thanks,\n Jenkins Build Team"     	
      }
      
      success {
-        echo '#################################################### Executing post [success] handler ####################################################'        
+        echo '################################## Executing post [success] handler ##################################'        
 	echo 'Job execution succeded...'
      }
      
      failure {
-       echo '#################################################### Executing post [failure] handler ####################################################'
+       echo '################################## Executing post [failure] handler ##################################'
        echo 'Job execution failed...'
      }  
    }//post
