@@ -9,7 +9,8 @@ pipeline {
   
    //Here we are assuming that the maven build and docker build are happening in the same server where Jenkins is installed
    parameters {
-     choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n Run docker stop <container-id> and docker rmi <container-id> before triggering the build.')        
+     //choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n Run docker stop <container-id> and docker rmi <container-id> before triggering the build.')        
+     choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.')        
    }
    
    environment {
