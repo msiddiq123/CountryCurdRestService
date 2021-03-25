@@ -67,16 +67,22 @@ pipeline {
                //ls -lah
           //'''
 	  
-	  //xargs
-	  bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE} > cidfile"
-	  bat 'type cidfile'
-	  bat "set appdir=This is testing for echo"
-	  bat "echo %appdir%"
+	  
+	  //bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE} > cidfile"
+	  //bat 'type cidfile'
+	  //bat "set appdir=This is testing for echo"
+	  //bat "echo %appdir%"
 	  bat ''' 
 	     echo "multiline bat script start >>>>>>>>>>>"
 	     dir /p
 	     set appecho="This is testing for echo"
 	     echo %appecho%
+	     
+	     docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE} > cidfile
+	     type cidfile
+	     set /p myvar=<cidfile
+	     echo %myvar%
+	     
 	     echo "multiline bat script end >>>>>>>>>>>"	     
 	  '''
 	  
