@@ -3,6 +3,8 @@
 //b)Here we are assuming that the maven build and docker build are happening in the same box where Jenkins server is installed
 //c)https://www.jenkins.io/doc/book/pipeline/
 
+def gvy
+
 pipeline {
 
    agent any
@@ -13,6 +15,7 @@ pipeline {
     
    parameters {
      choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n NOTE:- Run docker stop <container-id> and docker rmi <container-id> before triggering the build.')     
+     booleanParam(name: 'deployFlag', defaultValue: true, description: 'This flag will determine if a docker image should be deployed')
    }
    
    environment {
@@ -61,7 +64,11 @@ pipeline {
 	  echo 'Checking maven version...'
           bat 'mvn -version' 
 	  echo 'Checking docker version...'
-	  bat 'docker -v'	  
+	  bat 'docker -v'
+          script {
+             gv = load "groovy_script.groovy" 
+          }
+	  
 
 	  //https://stackoverflow.com/questions/35043665/change-windows-shell-in-jenkins-from-cygwin-to-git-bash-msys#:~:text=Go%20to%20Manage%20Jenkins%20%3E%20Configure,the%20Execute%20shell%20build%20step.&text=Note%3A%20This%20won't%20work,agents%20(JENKINS%2D38211).
 	  //-----For Linux----
@@ -96,10 +103,13 @@ pipeline {
 	   }
         }
 	steps {
+	  script {
+            gv.buildProj()
+          }
 	  echo '################################## Executing stage - Build Project ##################################' 
           echo "Buildng ====> ${PROJECT_GROUP_ID}:${PROJECT_ARTIFACT_ID}:${PROJECT_VERSION}:${PROJECT_PACKAGING}" 	  
 	  bat 'mvn clean install -Dmaven.test.skip=true'
-          bat 'dir /p'           	  
+          bat 'dir /p' 	  
         }//steps
      }//stage
      
@@ -110,6 +120,9 @@ pipeline {
 	   }
         }     
 	steps {
+	  script {
+            gv.buildImage()
+          }
 	  echo '################################## Executing stage - Build Docker Image ##################################'
           //echo 'Reading Dockerfile...'
 	  //bat 'type Dockerfile'	  
@@ -143,18 +156,26 @@ pipeline {
      }//stage 
      
      stage('Deploy Docker Image') { 
-        when {               
-           expression { 
-		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'release' 
-	   }
+        when {
+             //anyof
+	     allOf{
+		expression { 
+		  env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'release' 
+	        }
+	        expression {
+                  params.deployFlag
+                }
+             }           
         }     
-	steps {	  
+	steps {
+          script {
+            gv.deployImage()
+          }	
 	  echo '################################## Executing stage - Deploy Docker Image ##################################'
 	  //bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
 	  //bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
           //bat "docker ps -a"	  
-	  //bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE}"
-	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 192.168.1.35:9191/country-curd-rest-service:img-44"
+	  //bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE}"	  
         }//steps
      }//stage 
      
