@@ -14,8 +14,8 @@ pipeline {
    }
     
    parameters {
-     choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n NOTE:- Run docker stop <container-id> and docker rmi <container-id> before triggering the build.')     
-     booleanParam(name: 'deployFlag', defaultValue: true, description: 'This flag will determine if a docker image should be deployed')
+     choice(name: 'BuildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n NOTE:- Run docker stop <container-id> and docker rmi <container-id> before triggering the build.')     
+     booleanParam(name: 'DeployCheck', defaultValue: true, description: 'This flag will determine if the job will proceed with deployment')
    }
    
    environment {
@@ -55,8 +55,10 @@ pipeline {
    
      stage('Prepare Build Job') {
 	steps { 
-	   echo '################################## Executing stage - Prepare Build Job ##################################'
-	  
+	   script {
+             gv = load "groovy_script.groovy" 
+           }
+	   echo '################################## Executing stage - Prepare Build Job ##################################'	  
 	  //echo 'Reading Jenkinsfile...'
 	  //bat 'type Jenkinsfile'
           echo "M2_HOME ====> ${M2_HOME}"
@@ -65,9 +67,7 @@ pipeline {
           bat 'mvn -version' 
 	  echo 'Checking docker version...'
 	  bat 'docker -v'
-          script {
-             gv = load "groovy_script.groovy" 
-          }
+          
 	  
 
 	  //https://stackoverflow.com/questions/35043665/change-windows-shell-in-jenkins-from-cygwin-to-git-bash-msys#:~:text=Go%20to%20Manage%20Jenkins%20%3E%20Configure,the%20Execute%20shell%20build%20step.&text=Note%3A%20This%20won't%20work,agents%20(JENKINS%2D38211).
@@ -107,7 +107,7 @@ pipeline {
             gv.buildProj()
           }
 	  echo '################################## Executing stage - Build Project ##################################' 
-          echo "Buildng ====> ${PROJECT_GROUP_ID}:${PROJECT_ARTIFACT_ID}:${PROJECT_VERSION}:${PROJECT_PACKAGING}" 	  
+          echo "Building ====> ${PROJECT_GROUP_ID}:${PROJECT_ARTIFACT_ID}:${PROJECT_VERSION}:${PROJECT_PACKAGING}" 	  
 	  bat 'mvn clean install -Dmaven.test.skip=true'
           bat 'dir /p' 	  
         }//steps
@@ -163,7 +163,7 @@ pipeline {
 		  env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'release' 
 	        }
 	        expression {
-                  params.deployFlag
+                  params.DeployCheck
                 }
              }           
         }     
@@ -191,7 +191,7 @@ pipeline {
 	to: 'maroof.siddique2013@gmail.com',
         subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${env.BRANCH_NAME} - ${BUILD_ENV} - ${currentBuild.result} !",
 	mimeType: 'text/plain',
-        body: "Hi Team, \n\n Please find the build and console log details below:- \n\n Job Name :: ${env.JOB_NAME} \n GIT Branch :: ${env.BRANCH_NAME} \n Project GroupId :: ${PROJECT_GROUP_ID} \n Project ArtifactID :: ${PROJECT_ARTIFACT_ID} \n Project Version :: ${PROJECT_VERSION} \n Project Packaging :: ${PROJECT_PACKAGING} \n Build No. :: ${env.BUILD_NUMBER} \n Build Environment :: ${BUILD_ENV} \n Build Status :: ${currentBuild.result} \n Please find the build and console log details at ${env.BUILD_URL} \n\n Thanks,\n Jenkins Build Team"     	
+        body: "Hi Team, \n\n Please find the build and console log details below:- \n\n Job Name :: ${env.JOB_NAME} \n GIT Branch :: ${env.BRANCH_NAME} \n GIT Commit ID :: ${env.GIT_COMMIT} \n Project GroupId :: ${PROJECT_GROUP_ID} \n Project ArtifactID :: ${PROJECT_ARTIFACT_ID} \n Project Version :: ${PROJECT_VERSION} \n Project Packaging :: ${PROJECT_PACKAGING} \n Build No. :: ${env.BUILD_NUMBER} \n Build Environment :: ${BUILD_ENV} \n Build Status :: ${currentBuild.result} \n Please find the build and console log details at ${env.BUILD_URL} \n\n Thanks,\n Jenkins Build Team"     	
      }
      
      success {
