@@ -1,4 +1,8 @@
-//Encoded with - 'Encode in ANSI' in Notepad++
+//Assumptions:-
+//a)Encoded with - 'Encode in ANSI' in Notepad++
+//b)Here we are assuming that the maven build and docker build are happening in the same box where Jenkins server is installed
+//c)https://www.jenkins.io/doc/book/pipeline/
+
 pipeline {
 
    agent any
@@ -6,8 +10,7 @@ pipeline {
    tools {
      maven 'Jenkins-Maven'
    }
-  
-   //Here we are assuming that the maven build and docker build are happening in the same server where Jenkins is installed
+    
    parameters {
      choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n NOTE:- Run docker stop <container-id> and docker rmi <container-id> before triggering the build.')     
    }
@@ -17,39 +20,34 @@ pipeline {
      JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')
      BUILD_ENV = "${params.buildEnvironment}"  
      
+     pom = readMavenPom(file: 'pom.xml')
+     PROJECT_GROUP_ID = pom.getGroupId()
+     PROJECT_ARTIFACT_ID = pom.getArtifactId()
+     PROJECT_VERSION = pom.getVersion()
+     PROJECT_PACKAGING = pom.getPackaging()
+     
      DOCKER_REGISTRY_URL = 'https://registry.hub.docker.com/'
      DOCKER_REGISTRY_CREDENTIALS = 'global-docker-registry-credentials'
      DOCKER_IMAGE_NAME = "msiddiq123/country-curd-rest-service"
      //DOCKER_IMAGE_TAG = "img-${env.BUILD_ID}"
-     DOCKER_IMAGE_TAG = "img-0.0.1"
+     DOCKER_IMAGE_TAG = "img-${PROJECT_VERSION}"
      DOCKER_REGISTRY_IMAGE = "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" 
      
      NEXUS_REGISTRY_URL = 'http://192.168.1.35:9191/'
      NEXUS_REGISTRY_CREDENTIALS = 'global-nexus-registry-credentials'
      NEXUS_IMAGE_NAME = "192.168.1.35:9191/country-curd-rest-service"     
      //NEXUS_IMAGE_TAG = "img-${env.BUILD_ID}"
-     NEXUS_IMAGE_TAG = "rel-0.0.1"
+     NEXUS_IMAGE_TAG = "img-${PROJECT_VERSION}"
      NEXUS_REGISTRY_IMAGE = "${NEXUS_IMAGE_NAME}:${NEXUS_IMAGE_TAG}"
-     
-     pom = readMavenPom(file: 'pom.xml')
-		projectArtifactId = pom.getArtifactId()
-		projectGroupId = pom.getGroupId()
-		projectVersion = pom.getVersion()
-		projectPackaging = pom.getPackaging()
-		projectName = pom.getName()
-		projectDescription = pom.getDescription()
    }
    
-   //retry(2) 
-   // https://www.jenkins.io/doc/book/pipeline/syntax/#options
    options {     
      timestamps()
      timeout(time: 15, unit: 'MINUTES')   
-     buildDiscarder(logRotator(numToKeepStr: '15'))     
+     buildDiscarder(logRotator(numToKeepStr: '15'))
+     //retry(2)      
    }
-  
-
-   //NB:- In Linux we need to execute sh 'echo Executing stage - Build & Create Artifact...' /  sh 'mvn clean install' and in windows we can use bat like bat 'mvn -version'
+     
    stages {
    
      stage('Prepare Build Job') {
@@ -62,11 +60,7 @@ pipeline {
 	  echo 'Checking maven version...'
           bat 'mvn -version' 
 	  echo 'Checking docker version...'
-	  bat 'docker -v'
-	  
-		
-	 
-	   echo "POM DETAILS +++++++++++++ ${projectArtifactId}:${projectVersion}"
+	  bat 'docker -v'	  
 	  
 	  //https://stackoverflow.com/questions/35043665/change-windows-shell-in-jenkins-from-cygwin-to-git-bash-msys#:~:text=Go%20to%20Manage%20Jenkins%20%3E%20Configure,the%20Execute%20shell%20build%20step.&text=Note%3A%20This%20won't%20work,agents%20(JENKINS%2D38211).
 	  //-----For Linux----
@@ -101,7 +95,8 @@ pipeline {
 	   }
         }
 	steps {
-	  echo '################################## Executing stage - Build Project ##################################'        
+	  echo '################################## Executing stage - Build Project ##################################' 
+          echo "Buildng Project ====> ${PROJECT_GROUP_ID}:${PROJECT_ARTIFACT_ID}:${PROJECT_VERSION}:${PROJECT_PACKAGING}" 	  
 	  bat 'mvn clean install -Dmaven.test.skip=true'
           bat 'dir /p'          
 	  
@@ -174,7 +169,7 @@ pipeline {
 	to: 'maroof.siddique2013@gmail.com',
         subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${env.BRANCH_NAME} - ${BUILD_ENV} - ${currentBuild.result} !",
 	mimeType: 'text/plain',
-        body: "Hi Team, version - ${projectVersion} \n\n Please find the build and console log details below:- \n Job Name >> ${env.JOB_NAME} \n Build No. >> ${env.BUILD_NUMBER} \n GIT Branch >> ${env.BRANCH_NAME} \n Build Environment >> ${BUILD_ENV} \n Build Status >> ${currentBuild.result} \n Please find the build and console log details at ${env.BUILD_URL} \n\n Thanks,\n Jenkins Build Team"     	
+        body: "Hi Team, \n\n Please find the build and console log details below:- \n Job Name :: ${env.JOB_NAME} \n GIT Branch :: ${env.BRANCH_NAME} \n  Project GroupId :: ${PROJECT_GROUP_ID} \n Project ArtifactID :: ${PROJECT_ARTIFACT_ID} \n  Project Version :: ${PROJECT_VERSION} \n Project Packaging :: ${PROJECT_PACKAGING} \n Build No. :: ${env.BUILD_NUMBER} \n Build Environment :: ${BUILD_ENV} \n Build Status :: ${currentBuild.result} \n Please find the build and console log details at ${env.BUILD_URL} \n\n Thanks,\n Jenkins Build Team"     	
      }
      
      success {
