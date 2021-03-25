@@ -52,6 +52,7 @@ pipeline {
    
      stage('Prepare Build Job') {
 	steps {
+	  @echo off
 	  echo '################################## Executing stage - Prepare Build Job ##################################'
 	  //echo 'Reading Jenkinsfile...'
 	  //bat 'type Jenkinsfile'
@@ -95,8 +96,9 @@ pipeline {
 	   }
         }
 	steps {
+	  @echo off
 	  echo '################################## Executing stage - Build Project ##################################' 
-          echo "Buildng Project ====> ${PROJECT_GROUP_ID}:${PROJECT_ARTIFACT_ID}:${PROJECT_VERSION}:${PROJECT_PACKAGING}" 	  
+          echo "Buildng ====> ${PROJECT_GROUP_ID}:${PROJECT_ARTIFACT_ID}:${PROJECT_VERSION}:${PROJECT_PACKAGING}" 	  
 	  bat 'mvn clean install -Dmaven.test.skip=true'
           bat 'dir /p'          
 	  
@@ -110,6 +112,7 @@ pipeline {
 	   }
         }     
 	steps {
+	  @echo off
 	  echo '################################## Executing stage - Build Docker Image ##################################'
           //echo 'Reading Dockerfile...'
 	  //bat 'type Dockerfile'	  
@@ -149,6 +152,7 @@ pipeline {
 	   }
         }     
 	steps {
+	  @echo off
 	  echo '################################## Executing stage - Deploy Docker Image ##################################'
 	  //bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
 	  //bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
@@ -162,6 +166,7 @@ pipeline {
    post {
      //https://plugins.jenkins.io/email-ext/
      always {
+        @echo off
 	echo '################################## Executing post [always] handler ##################################'
        
         emailext attachLog: true,
@@ -169,15 +174,17 @@ pipeline {
 	to: 'maroof.siddique2013@gmail.com',
         subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${env.BRANCH_NAME} - ${BUILD_ENV} - ${currentBuild.result} !",
 	mimeType: 'text/plain',
-        body: "Hi Team, \n\n Please find the build and console log details below:- \n Job Name :: ${env.JOB_NAME} \n GIT Branch :: ${env.BRANCH_NAME} \n  Project GroupId :: ${PROJECT_GROUP_ID} \n Project ArtifactID :: ${PROJECT_ARTIFACT_ID} \n  Project Version :: ${PROJECT_VERSION} \n Project Packaging :: ${PROJECT_PACKAGING} \n Build No. :: ${env.BUILD_NUMBER} \n Build Environment :: ${BUILD_ENV} \n Build Status :: ${currentBuild.result} \n Please find the build and console log details at ${env.BUILD_URL} \n\n Thanks,\n Jenkins Build Team"     	
+        body: "Hi Team, \n\n Please find the build and console log details below:- \n\n Job Name :: ${env.JOB_NAME} \n GIT Branch :: ${env.BRANCH_NAME} \n Project GroupId :: ${PROJECT_GROUP_ID} \n Project ArtifactID :: ${PROJECT_ARTIFACT_ID} \n Project Version :: ${PROJECT_VERSION} \n Project Packaging :: ${PROJECT_PACKAGING} \n Build No. :: ${env.BUILD_NUMBER} \n Build Environment :: ${BUILD_ENV} \n Build Status :: ${currentBuild.result} \n Please find the build and console log details at ${env.BUILD_URL} \n\n Thanks,\n Jenkins Build Team"     	
      }
      
      success {
+        @echo off
         echo '################################## Executing post [success] handler ##################################'        
 	echo 'Job execution succeded...'
      }
      
      failure {
+       @echo off
        echo '################################## Executing post [failure] handler ##################################'
        echo 'Job execution failed...'
      }  
