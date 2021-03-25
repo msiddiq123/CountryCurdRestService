@@ -52,8 +52,9 @@ pipeline {
    
      stage('Prepare Build Job') {
 	steps {
-	  echo off
-	  echo '################################## Executing stage - Prepare Build Job ##################################'
+	  bat ''' echo off 
+	   echo '################################## Executing stage - Prepare Build Job ##################################'
+	  '''
 	  //echo 'Reading Jenkinsfile...'
 	  //bat 'type Jenkinsfile'
           echo "M2_HOME ====> ${M2_HOME}"
