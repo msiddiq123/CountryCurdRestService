@@ -15,7 +15,7 @@ pipeline {
     
    parameters {
      choice(name: 'BuildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n NOTE:- Run docker stop <container-id> and docker rmi <container-id> before triggering the build.')     
-     booleanParam(name: 'DeployCheck', defaultValue: true, description: 'This flag will determine if the job will proceed with deployment')
+     booleanParam(name: 'CheckDeploy', defaultValue: true, description: 'This flag will check if the job will proceed with deployment')
    }
    
    environment {
@@ -163,7 +163,7 @@ pipeline {
 		  env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'release' 
 	        }
 	        expression {
-                  params.DeployCheck
+                  params.CheckDeploy
                 }
              }           
         }     
