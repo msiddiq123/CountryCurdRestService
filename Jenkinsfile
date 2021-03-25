@@ -73,8 +73,11 @@ pipeline {
 	  bat "set appdir=This is testing for echo"
 	  bat "echo %appdir%"
 	  bat ''' 
+	     echo 'multiline bat script start >>>>>>>>>>>' 
+	     dir /p
 	     set appecho=This is testing for echo 
-	     echo %appecho% 
+	     echo %appecho%
+	     echo 'multiline bat script end >>>>>>>>>>>'	     
 	  '''
 	  
 	  bat "set /p myvar=<cidfile"
