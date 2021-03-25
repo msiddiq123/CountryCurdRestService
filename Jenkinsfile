@@ -92,7 +92,10 @@ pipeline {
 	steps {
 	  echo '#################################################### Executing stage - Build Project ####################################################'        
 	  bat 'mvn clean install -Dmaven.test.skip=true'
-          bat 'dir /p'	  
+          bat 'dir /p'	
+
+          bat "docker stop $(docker ps -aqf ancestor=192.168.1.35:9191/country-curd-rest-service:img-44)"
+	  
         }//steps
      }//stage
      
