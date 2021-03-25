@@ -9,7 +9,8 @@ pipeline {
   
    //Here we are assuming that the maven build and docker build are happening in the same server where Jenkins is installed
    parameters {
-     choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.')     
+     choice(name: 'buildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.')   
+     string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')     
    }
    
    environment {
