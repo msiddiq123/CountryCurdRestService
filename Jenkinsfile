@@ -156,7 +156,6 @@ pipeline {
 	     //input message:'Do you want to proceed with deployment?', submitter: 'DevOps-Team'
 	     input message:'Do you want to proceed for deployment?'
 	  }
-	  echo "uip =========================== ${uip}"
 	  
         }//steps
      }//stage 
