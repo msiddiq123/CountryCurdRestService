@@ -181,7 +181,8 @@ pipeline {
 	  //bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
 	  //bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
           //bat "docker ps -a"	  
-	  //bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE}"	  
+	  //bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE}"
+	  
         }//steps
      }//stage      
    }//stages
@@ -202,7 +203,7 @@ pipeline {
      success {
         echo '################################## Executing post [success] handler ##################################'        
 	echo 'Job execution succeded...'
-	build job: 'maven-freestyle-test-job', parameters: [[$class: 'BooleanParameterValue', name: 'CodeScan', value: true], [$class: 'StringParameterValue', name: 'UnitTest', value: true]]
+	build job: 'maven-freestyle-test-job', parameters: [[$class: 'BooleanParameterValue', name: 'CodeScan', value: true], [$class: 'BooleanParameterValue', name: 'UnitTest', value: true]]
 	echo 'Invoked downstream job - maven-freestyle-test-job...'
      }
      
