@@ -179,9 +179,8 @@ pipeline {
         }//steps
      }//stage 
      
-   }//stages
-   
-   post {
+     stage('Notify'){
+        post {
      //https://plugins.jenkins.io/email-ext/
      always {
 	echo '################################## Executing post [always] handler ##################################'
@@ -203,6 +202,11 @@ pipeline {
        echo '################################## Executing post [failure] handler ##################################'
        echo 'Job execution failed...'
      }  
-   }//post
+   }//post   
+     }
+     
+   }//stages
+   
+   
       
 }//pipeline
