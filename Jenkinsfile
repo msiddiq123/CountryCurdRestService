@@ -54,6 +54,12 @@ pipeline {
    }
      
    stages {   
+    stage('SCM') {
+	steps { 
+	 git  credentialsId: "${GIT_CREDENTIALS}", url: 'https://github.com/msiddiq123/CountryCurdRestService.git'
+	}
+    }
+    
      stage('Prepare Build Job') {
 	steps { 
 	   script {
