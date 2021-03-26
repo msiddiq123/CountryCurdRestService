@@ -13,8 +13,8 @@ pipeline {
    agent any
    
     triggers {
-      //Will run at every 15 minutes (may be at XX:01,XX:16,XX:31 ..)
-      cron('*/2 * * * *')
+      //Will run at every 30 minutes (may be at XX:01,XX:31 ..)
+      cron('*/30 * * * *')
     }
    
    tools {
@@ -122,7 +122,7 @@ pipeline {
      stage('Build Docker Image') { 
         when {               
            expression { 
-	        // env.BRANCH_NAME != 'master';
+	        // env.BRANCH_NAME != 'master'; OR !(env.BRANCH_NAME = 'master')
 		//environment name: 'NAME', value: 'this'
 		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-' || env.BRANCH_NAME == 'release' 
 	   }
