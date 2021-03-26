@@ -21,7 +21,7 @@ pipeline {
    environment {
      GIT_CREDENTIALS = credentials('global-git-credentials')
      JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')
-     BUILD_ENV = "${params.buildEnvironment}"  
+     BUILD_ENV = "${params.BuildEnvironment}"  
      
      pom = readMavenPom(file: 'pom.xml')
      PROJECT_GROUP_ID = pom.getGroupId()
@@ -203,8 +203,8 @@ pipeline {
      success {
         echo '################################## Executing post [success] handler ##################################'        
 	echo 'Job execution succeded...'
-	build job: 'maven-freestyle-test-job', parameters: [[$class: 'BooleanParameterValue', name: 'CodeScan', value: true], [$class: 'BooleanParameterValue', name: 'UnitTest', value: true]]
-	echo 'Invoked downstream job - maven-freestyle-test-job...'
+	//build job: 'maven-freestyle-test-job', parameters: [[$class: 'BooleanParameterValue', name: 'CodeScan', value: true], [$class: 'BooleanParameterValue', name: 'UnitTest', value: true]]
+	build job: 'maven-freestyle-test-job'
      }
      
      failure {
