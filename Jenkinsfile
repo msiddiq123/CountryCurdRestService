@@ -154,7 +154,7 @@ pipeline {
 	  
 	  timeout(time:3, unit:'HOURS') {
 	     //input message:'Do you want to proceed with deployment?', submitter: 'DevOps-Team'
-	     def uip = input message:'Do you want to proceed for deployment?'
+	     input message:'Do you want to proceed for deployment?'
 	  }
 	  echo "uip =========================== ${uip}"
 	  
