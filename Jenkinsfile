@@ -51,8 +51,7 @@ pipeline {
      //retry(2)      
    }
      
-   stages {
-   
+   stages {   
      stage('Prepare Build Job') {
 	steps { 
 	   script {
@@ -172,15 +171,16 @@ pipeline {
             gv.deployImage()
           }	
 	  echo '################################## Executing stage - Deploy Docker Image ##################################'
+	  input 'Do you want to proceed with deployment?'
 	  //bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
 	  //bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
           //bat "docker ps -a"	  
 	  //bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE}"	  
         }//steps
-     }//stage 
-     
-     stage('Notify'){
-        post {
+     }//stage      
+   }//stages
+   
+   post {
      //https://plugins.jenkins.io/email-ext/
      always {
 	echo '################################## Executing post [always] handler ##################################'
@@ -202,11 +202,6 @@ pipeline {
        echo '################################## Executing post [failure] handler ##################################'
        echo 'Job execution failed...'
      }  
-   }//post   
-     }
-     
-   }//stages
-   
-   
+   }//post
       
 }//pipeline
