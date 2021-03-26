@@ -2,6 +2,7 @@
 //a)Encoded with - 'Encode in ANSI' in Notepad++
 //b)Here we are assuming that the maven build and docker build are happening in the same box where Jenkins server is installed
 //c)https://www.jenkins.io/doc/book/pipeline/
+//d)https://www.youtube.com/watch?v=B_2FXWI6CWg
 
 def gvy
 
@@ -48,7 +49,8 @@ pipeline {
      timestamps()
      timeout(time: 15, unit: 'MINUTES')   
      buildDiscarder(logRotator(numToKeepStr: '15'))
-     //retry(2)      
+     //retry(2) 
+     skipDefaultCheckout()    
    }
      
    stages {   
@@ -203,8 +205,7 @@ pipeline {
      success {
         echo '################################## Executing post [success] handler ##################################'        
 	echo 'Job execution succeded...'
-	//build job: 'maven-freestyle-test-job', parameters: [[$class: 'BooleanParameterValue', name: 'CodeScan', value: true], [$class: 'BooleanParameterValue', name: 'UnitTest', value: true]]
-	build job: 'maven-freestyle-test-job'
+	build job: 'maven-freestyle-test-job', parameters: [[$class: 'BooleanParameterValue', name: 'CodeScan', value: true], [$class: 'BooleanParameterValue', name: 'UnitTest', value: true]]	
      }
      
      failure {
