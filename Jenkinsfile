@@ -152,14 +152,12 @@ pipeline {
 	  //bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
 	  //bat "docker rmi ${NEXUS_REGISTRY_IMAGE}" 
 	  
-	  //timeout(time:3, unit:'HOURS') {
+	  timeout(time:3, unit:'HOURS') {
 	     //input message:'Do you want to proceed with deployment?', submitter: 'DevOps-Team'
-	     //input message:'Do you want to proceed for deployment?'
-	  //}
-	  timeout(time:3, unit:'HOURS') {	  
-	     def hello = input id: 'CustomId', message: 'Want to continue?', ok: 'Yes', parameters: [string(defaultValue: 'world', description: '', name: 'hello')]	   
+	     def uip = input message:'Do you want to proceed for deployment?'
 	  }
-	  echo "hello ======================================== ${hello}"
+	  echo "uip =========================== ${uip}"
+	  
         }//steps
      }//stage 
      
