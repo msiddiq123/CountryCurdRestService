@@ -12,10 +12,10 @@ pipeline {
 
    agent any
    
-    triggers {
+    //triggers {
       //Will run at every 30 minutes (may be at XX:01,XX:31 ..)
-      cron('*/30 * * * *')
-    }
+      //cron('*/30 * * * *')
+    //}
    
    tools {
      maven 'Jenkins-Maven'
@@ -105,7 +105,7 @@ pipeline {
      stage('Build Project') {
 	when {               
            expression { 
-		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release' 
+		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature.*' || env.BRANCH_NAME == 'release' 
 	   }
         }
 	steps {
