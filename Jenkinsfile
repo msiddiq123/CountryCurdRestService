@@ -16,8 +16,8 @@ pipeline {
      maven 'Jenkins-Maven'
    }
     
-   parameters {
-     text(name: 'BranchName', defaultValue: 'feature', description: 'Provide a SCM repo branch name to check out.')
+   parameters {    
+     string(name: 'BranchName', defaultValue: 'feature', description: 'Provide a branch name to check out.')
      choice(name: 'BuildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n NOTE:- Run docker stop <container-id> and docker rmi <container-id> before triggering the build.')     
      booleanParam(name: 'CheckDeploy', defaultValue: true, description: 'This flag will check if the job will proceed with deployment')
    }
@@ -56,12 +56,6 @@ pipeline {
    }
      
    stages {   
-    stage('SCM') {
-	steps { 
-	 git  credentialsId: "${GIT_CREDENTIALS}", url: 'https://github.com/msiddiq123/CountryCurdRestService.git'
-	}
-    }
-    
      stage('Prepare Build Job') {
 	steps { 
 	   script {
@@ -76,8 +70,7 @@ pipeline {
           bat 'mvn -version' 
 	  echo 'Checking docker version...'
 	  bat 'docker -v'
-          
-	  
+          	  
 
 	  //https://stackoverflow.com/questions/35043665/change-windows-shell-in-jenkins-from-cygwin-to-git-bash-msys#:~:text=Go%20to%20Manage%20Jenkins%20%3E%20Configure,the%20Execute%20shell%20build%20step.&text=Note%3A%20This%20won't%20work,agents%20(JENKINS%2D38211).
 	  //-----For Linux----
