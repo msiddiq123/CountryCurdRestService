@@ -1,8 +1,10 @@
 //Assumptions:-
 //a)Encoded with - 'Encode in ANSI' in Notepad++
 //b)Here we are assuming that the maven build and docker build are happening in the same box where Jenkins server is installed
-//c)https://www.jenkins.io/doc/book/pipeline/
-//d)https://www.youtube.com/watch?v=B_2FXWI6CWg
+//c)For 'country-curd-rest-service-job' mutibranch pipeline job, it creates a folder with this name in jenkins dashboard and creates child jobs inside this folder for each of the branches...so you can only configure the parent job and not the child jobs
+//Reference:-
+//a)https://www.jenkins.io/doc/book/pipeline/
+//b)https://www.youtube.com/watch?v=B_2FXWI6CWg
 
 def gvy
 
@@ -15,6 +17,7 @@ pipeline {
    }
     
    parameters {
+     text(name: 'BranchName', defaultValue: 'feature', description: 'Provide a SCM repo branch name to check out.')
      choice(name: 'BuildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n NOTE:- Run docker stop <container-id> and docker rmi <container-id> before triggering the build.')     
      booleanParam(name: 'CheckDeploy', defaultValue: true, description: 'This flag will check if the job will proceed with deployment')
    }
@@ -34,14 +37,14 @@ pipeline {
      DOCKER_REGISTRY_CREDENTIALS = 'global-docker-registry-credentials'
      DOCKER_IMAGE_NAME = "msiddiq123/country-curd-rest-service"
      //DOCKER_IMAGE_TAG = "img-${env.BUILD_ID}"
-     DOCKER_IMAGE_TAG = "img-${PROJECT_VERSION}"
+     DOCKER_IMAGE_TAG = "${BUILD_ENV}_${PROJECT_VERSION}"
      DOCKER_REGISTRY_IMAGE = "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" 
      
      NEXUS_REGISTRY_URL = 'http://192.168.1.35:9191/'
      NEXUS_REGISTRY_CREDENTIALS = 'global-nexus-registry-credentials'
      NEXUS_IMAGE_NAME = "192.168.1.35:9191/country-curd-rest-service"     
      //NEXUS_IMAGE_TAG = "img-${env.BUILD_ID}"
-     NEXUS_IMAGE_TAG = "img-${PROJECT_VERSION}"
+     NEXUS_IMAGE_TAG = "${BUILD_ENV}_${PROJECT_VERSION}"
      NEXUS_REGISTRY_IMAGE = "${NEXUS_IMAGE_NAME}:${NEXUS_IMAGE_TAG}"     
    }
    
