@@ -157,12 +157,9 @@ pipeline {
 	     //input message:'Do you want to proceed for deployment?'
 	  //}
 	  timeout(time:3, unit:'HOURS') {	  
-	     userInput = input(
-		id: 'userInput', message: "Do you want to skip?", parameters: [
-		booleanParam(defaultValue: false, description: 'really?', name: 'myValue')
-	    ])
+	     def hello = input id: 'CustomId', message: 'Want to continue?', ok: 'Yes', parameters: [string(defaultValue: 'world', description: '', name: 'hello')]	   
 	  }
-	  
+	  echo "hello ======================================== ${hello}"
         }//steps
      }//stage 
      
@@ -179,11 +176,10 @@ pipeline {
              }           
         }     
 	steps {
-	if (userInput) {
-          script {
+	  script {
             gv.deployImage()
           }	
-	}  
+	  
 	  echo '################################## Executing stage - Deploy Docker Image ##################################'	 	  
 	  //bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
 	  //bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
