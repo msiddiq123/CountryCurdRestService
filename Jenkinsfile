@@ -184,6 +184,17 @@ pipeline {
 	  //bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE}"	  
         }//steps
      }//stage      
+     
+     stage{
+        steps{
+	   when {               
+	       expression { 
+		   env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'release' 
+	       }
+           }
+	   build job: 'maven-freestyle-test-job', parameters: [[$class: 'BooleanParameterValue', name: 'CodeScan', value: true], [$class: 'StringParameterValue', name: 'UnitTest', value: true]]
+	}//steps
+     }//stage
    }//stages
    
    post {
