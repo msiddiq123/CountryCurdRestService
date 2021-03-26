@@ -12,12 +12,16 @@ pipeline {
 
    agent any
    
+    triggers {
+      //Will run at every 15 minutes (may be at XX:01,XX:16,XX:31 ..)
+      cron('*/2 * * * *')
+    }
+   
    tools {
      maven 'Jenkins-Maven'
    }
     
-   parameters {    
-     string(name: 'BranchName', defaultValue: 'feature', description: 'Provide a branch name to check out.')
+   parameters {         
      choice(name: 'BuildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n NOTE:- Run docker stop <container-id> and docker rmi <container-id> before triggering the build.')     
      booleanParam(name: 'CheckDeploy', defaultValue: true, description: 'This flag will check if the job will proceed with deployment')
    }
@@ -101,7 +105,7 @@ pipeline {
      stage('Build Project') {
 	when {               
            expression { 
-		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'release' 
+		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release' 
 	   }
         }
 	steps {
@@ -118,7 +122,9 @@ pipeline {
      stage('Build Docker Image') { 
         when {               
            expression { 
-		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'release' 
+	        // env.BRANCH_NAME != 'master';
+		//environment name: 'NAME', value: 'this'
+		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-' || env.BRANCH_NAME == 'release' 
 	   }
         }     
 	steps {
@@ -168,7 +174,7 @@ pipeline {
              //anyof
 	     allOf{
 		expression { 
-		  env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'release' 
+		  env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-' || env.BRANCH_NAME == 'release' 
 	        }
 	        expression {
                   params.CheckDeploy
