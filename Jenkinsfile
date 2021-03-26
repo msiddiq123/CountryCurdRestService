@@ -108,7 +108,11 @@ pipeline {
 	  echo '################################## Executing stage - Build Project ##################################' 
           echo "Building ====> ${PROJECT_GROUP_ID}:${PROJECT_ARTIFACT_ID}:${PROJECT_VERSION}:${PROJECT_PACKAGING}" 	  
 	  bat 'mvn clean install -Dmaven.test.skip=true'
-          bat 'dir /p' 	  
+          bat 'dir /p' 	
+           timeout(time:3, unit:'HOURS') {
+	     //input message:'Do you want to proceed with deployment?', submitter: 'DevOps-Team'
+	     input message:'Do you want to skip Build phase?'
+	  }	  
         }//steps
      }//stage
      
@@ -170,8 +174,11 @@ pipeline {
           script {
             gv.deployImage()
           }	
-	  echo '################################## Executing stage - Deploy Docker Image ##################################'
-	  input 'Do you want to proceed with deployment?'
+	  echo '################################## Executing stage - Deploy Docker Image ##################################'	 
+	  timeout(time:3, unit:'HOURS') {
+	     //input message:'Do you want to proceed with deployment?', submitter: 'DevOps-Team'
+	     input message:'Do you want to proceed for deployment?'
+	  }
 	  //bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
 	  //bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
           //bat "docker ps -a"	  
