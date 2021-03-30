@@ -154,21 +154,21 @@ pipeline {
 		//https://wiki.jenkins.io/display/JENKINS/Credentials%20Binding%20Plugin
 		echo "Connecting to Jenkins Server with ${USERNAME} and ${PASSWORD}"
 	  }
-	  //script{
+	  script{
 	     //Ensure that docker(or docker swarm is configured) engine is installed in the Jenkins server and the Docker service is running.
 	     //https://www.jenkins.io/doc/book/pipeline/docker/
-	     //docker.withRegistry(DOCKER_NON-PROD_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
+	     //docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
                 //def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
                 //customImage.push()
              //}
-	       //docker.withRegistry(NEXUS_NON-PROD_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
-               //def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
-               //customImage.push()
-               //}	     
-	  //}//script
+	       docker.withRegistry(NEXUS_NON_PROD_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
+               def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
+               customImage.push()
+               }	     
+	  }//script
 	  
 	  
-	  bat "docker images -a"
+	  //bat "docker images -a"
 	  bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
 	  bat "docker rmi ${NEXUS_REGISTRY_IMAGE}" 
 	  
