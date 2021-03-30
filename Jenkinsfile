@@ -1,7 +1,8 @@
 //Assumptions:-
 //a)Encoded with - 'Encode in ANSI' in Notepad++
 //b)Here we are assuming that the maven build and docker build are happening in the same box where Jenkins server is installed
-//c)For 'country-curd-rest-service-job' mutibranch pipeline job, it creates a folder with this name in jenkins dashboard and creates child jobs inside this folder for each of the branches...so you can only configure the parent job and not the child jobs
+//c)We are creating a container with replica=1
+//d)For 'country-curd-rest-service-job' mutibranch pipeline job, it creates a folder with this name in jenkins dashboard and creates child jobs inside this folder for each of the branches...so you can only configure the parent job and not the child jobs
 //Reference:-
 //a)https://www.jenkins.io/doc/book/pipeline/
 //b)https://www.youtube.com/watch?v=B_2FXWI6CWg
@@ -129,10 +130,8 @@ pipeline {
         when { 
            allOf{
 		   expression { 
-		       // env.BRANCH_NAME != 'master'; OR !(env.BRANCH_NAME = 'master')
-		      //environment name: 'NAME', value: 'this'
 		     //https://intellipaat.com/community/7453/whats-the-pattern-evaluation-on-jenkinsfile-when-branch-setting
-		       env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*' 
+		     env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*' 
 		   }
 		   expression {
                        params.BuildEnvironment == 'default' || params.BuildEnvironment == 'dev' || params.BuildEnvironment == 'sit' || params.BuildEnvironment == 'uat' || params.BuildEnvironment == 'pt'                       		       
@@ -169,9 +168,9 @@ pipeline {
 	  //}//script
 	  
 	  
-	  //bat "docker images -a"
-	  //bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
-	  //bat "docker rmi ${NEXUS_REGISTRY_IMAGE}" 
+	  bat "docker images -a"
+	  bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
+	  bat "docker rmi ${NEXUS_REGISTRY_IMAGE}" 
 	  
 	  timeout(time:3, unit:'HOURS') {
 	     //input message:'Do you want to proceed for Image Building ?', submitter: 'DevOps-Team'
@@ -184,7 +183,8 @@ pipeline {
      stage('Build Image On Docker-Prod') { 
         when { 
            allOf{
-		expression { 		     
+		expression { 	
+		  //env.BRANCH_NAME != 'master'; OR !(env.BRANCH_NAME = 'master')	
 		  env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*' 
 		}
 		expression {
@@ -213,9 +213,9 @@ pipeline {
 	  //}//script
 	  
 	  
-	  //bat "docker images -a"
-	  //bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
-	  //bat "docker rmi ${NEXUS_REGISTRY_IMAGE}" 
+	  bat "docker images -a"
+	  bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
+	  bat "docker rmi ${NEXUS_REGISTRY_IMAGE}" 
 	  
 	  timeout(time:3, unit:'HOURS') {
 	     //input message:'Do you want to proceed for Image Building ?', submitter: 'DevOps-Team'
@@ -244,10 +244,10 @@ pipeline {
 	  
 	  echo '################################## Executing stage - Deploy Docker Image ##################################'
           echo "Deploying docker image on ===================> ${DOCKER_NON_PROD_SERVER}"	  
-	  //bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
-	  //bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
+	  bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
+	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
           //bat "docker ps -a"	  
-	  //bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE}"
+	  bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE}"
 	  
         }//steps
      }//stage      
