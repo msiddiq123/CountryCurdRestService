@@ -37,18 +37,20 @@ pipeline {
      PROJECT_VERSION = pom.getVersion()
      PROJECT_PACKAGING = pom.getPackaging()
      
-     DOCKER_REGISTRY_URL = 'https://registry.hub.docker.com/'
+     DOCKER_NON-PROD_REGISTRY_URL = 'https://registry.hub.docker.com/'
+     DOCKER_PROD_REGISTRY_URL = 'https://index.docker.io/v1/'
      DOCKER_REGISTRY_CREDENTIALS = 'global-docker-registry-credentials'
      DOCKER_IMAGE_NAME = "msiddiq123/country-curd-rest-service"
      //DOCKER_IMAGE_TAG = "img-${env.BUILD_ID}"
-     DOCKER_IMAGE_TAG = "${BUILD_ENV}_${PROJECT_VERSION}"
+     DOCKER_IMAGE_TAG = "${env.BRANCH_NAME}_${PROJECT_VERSION}"
      DOCKER_REGISTRY_IMAGE = "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" 
      
-     NEXUS_REGISTRY_URL = 'http://192.168.1.35:9191/'
+     NEXUS_NON-PROD_REGISTRY_URL = 'http://192.168.1.35:9191/'
+     NEXUS_PROD_REGISTRY_URL = 'http://192.168.1.36:9191/'
      NEXUS_REGISTRY_CREDENTIALS = 'global-nexus-registry-credentials'
      NEXUS_IMAGE_NAME = "192.168.1.35:9191/country-curd-rest-service"     
      //NEXUS_IMAGE_TAG = "img-${env.BUILD_ID}"
-     NEXUS_IMAGE_TAG = "${BUILD_ENV}_${PROJECT_VERSION}"
+     NEXUS_IMAGE_TAG = "${env.BRANCH_NAME}_${PROJECT_VERSION}"
      NEXUS_REGISTRY_IMAGE = "${NEXUS_IMAGE_NAME}:${NEXUS_IMAGE_TAG}"     
    }
    
@@ -105,7 +107,7 @@ pipeline {
      stage('Build Project') {
 	when {               
            expression { 
-		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature.*' || env.BRANCH_NAME == 'release' 
+		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*' 
 	   }
         }
 	steps {
@@ -119,19 +121,26 @@ pipeline {
         }//steps
      }//stage
      
-     stage('Build Docker Image') { 
-        when {               
-           expression { 
-	        // env.BRANCH_NAME != 'master'; OR !(env.BRANCH_NAME = 'master')
-		//environment name: 'NAME', value: 'this'
-		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-' || env.BRANCH_NAME == 'release' 
-	   }
+     stage('Build Image On Docker-NonProd') { 
+        when { 
+           allOf{
+		   expression { 
+		       // env.BRANCH_NAME != 'master'; OR !(env.BRANCH_NAME = 'master')
+		      //environment name: 'NAME', value: 'this'
+		     //https://intellipaat.com/community/7453/whats-the-pattern-evaluation-on-jenkinsfile-when-branch-setting
+		       env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*' 
+		   }
+		   expression {
+                       params.BuildEnvironment == 'default' || params.BuildEnvironment == 'dev' || params.BuildEnvironment == 'sit' || params.BuildEnvironment == 'uat' || params.BuildEnvironment == 'pt'                       		       
+                   }
+           } 	              
         }     
 	steps {
 	  script {
             gv.buildImage()
           }
 	  echo '################################## Executing stage - Build Docker Image ##################################'
+	  echo "Building docker image on Docker NonProd Server ===================> ${NEXUS_NON-PROD_REGISTRY_URL}"
           //echo 'Reading Dockerfile...'
 	  //bat 'type Dockerfile'	  
 	  
@@ -142,15 +151,14 @@ pipeline {
 		//https://wiki.jenkins.io/display/JENKINS/Credentials%20Binding%20Plugin
 		echo "Connecting to Jenkins Server with ${USERNAME} and ${PASSWORD}"
 	  }
-	  
 	  //script{
 	     //Ensure that docker(or docker swarm is configured) engine is installed in the Jenkins server and the Docker service is running.
 	     //https://www.jenkins.io/doc/book/pipeline/docker/
-	     //docker.withRegistry(DOCKER_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
+	     //docker.withRegistry(DOCKER_NON-PROD_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
                 //def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
                 //customImage.push()
              //}
-	       //docker.withRegistry(NEXUS_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
+	       //docker.withRegistry(NEXUS_NON-PROD_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
                //def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
                //customImage.push()
                //}	     
@@ -162,8 +170,52 @@ pipeline {
 	  //bat "docker rmi ${NEXUS_REGISTRY_IMAGE}" 
 	  
 	  timeout(time:3, unit:'HOURS') {
-	     //input message:'Do you want to proceed with deployment?', submitter: 'DevOps-Team'
-	     input message:'Do you want to proceed for deployment?'
+	     //input message:'Do you want to proceed for Image Building ?', submitter: 'DevOps-Team'
+	     input message:'Do you want to proceed for Image Building ?'
+	  }
+	  
+        }//steps
+     }//stage 
+     
+     stage('Build Image On Docker-Prod') { 
+        when { 
+           allOf{
+		expression { 		     
+		  env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*' 
+		}
+		expression {
+                  params.BuildEnvironment == 'prod'
+                }
+           } 	              
+        }     
+	steps {
+	  script {
+            gv.buildImage()
+          }
+	  echo '################################## Executing stage - Build Docker Image ##################################'
+	  echo "Building docker image on Docker Prod Server ===================> ${NEXUS_PROD_REGISTRY_URL}"
+           
+	  //script{
+	     //Ensure that docker(or docker swarm is configured) engine is installed in the Jenkins server and the Docker service is running.
+	     //https://www.jenkins.io/doc/book/pipeline/docker/
+	     //docker.withRegistry(DOCKER_NON-PROD_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
+                //def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
+                //customImage.push()
+             //}
+	       //docker.withRegistry(NEXUS_NON-PROD_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
+               //def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
+               //customImage.push()
+               //}	     
+	  //}//script
+	  
+	  
+	  //bat "docker images -a"
+	  //bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
+	  //bat "docker rmi ${NEXUS_REGISTRY_IMAGE}" 
+	  
+	  timeout(time:3, unit:'HOURS') {
+	     //input message:'Do you want to proceed for Image Building ?', submitter: 'DevOps-Team'
+	     input message:'Do you want to proceed for Image Building ?'
 	  }
 	  
         }//steps
@@ -174,7 +226,7 @@ pipeline {
              //anyof
 	     allOf{
 		expression { 
-		  env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-' || env.BRANCH_NAME == 'release' 
+		  env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*'
 	        }
 	        expression {
                   params.CheckDeploy
@@ -186,7 +238,9 @@ pipeline {
             gv.deployImage()
           }	
 	  
-	  echo '################################## Executing stage - Deploy Docker Image ##################################'	 	  
+	  echo '################################## Executing stage - Deploy Docker Image ##################################'
+
+          echo "Deploying docker image on ===================> ${NEXUS_NON-PROD_REGISTRY_URL}"	  
 	  //bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
 	  //bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
           //bat "docker ps -a"	  
