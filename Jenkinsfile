@@ -23,7 +23,7 @@ pipeline {
    }
     
    parameters {         
-     choice(name: 'BuildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n NOTE:- Run docker stop <container-id> and docker rmi <container-id> before triggering the build.')     
+     choice(name: 'BuildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n NOTE:- Run commands like - docker rmi <image-id>, docker stop <container-id> and docker rmi <container-id> before triggering the build.')     
      booleanParam(name: 'CheckDeploy', defaultValue: true, description: 'This flag will check if the job will proceed with deployment')
    }
    
@@ -81,18 +81,10 @@ pipeline {
           bat 'mvn -version' 
 	  echo 'Checking docker version...'
 	  bat 'docker -v'
-          	  
-
-	  //https://stackoverflow.com/questions/35043665/change-windows-shell-in-jenkins-from-cygwin-to-git-bash-msys#:~:text=Go%20to%20Manage%20Jenkins%20%3E%20Configure,the%20Execute%20shell%20build%20step.&text=Note%3A%20This%20won't%20work,agents%20(JENKINS%2D38211).
-	  //-----For Linux----
-	  //shell('''#!/bin/bash
-                //set -e
-		//set -x
-		//echo "Hello from bash"
-                //echo "Who I'm $SHELL"
-         //''')
-	 //-----OR----
+	  
+	 //-----For Linux----
 	 //https://www.jenkins.io/doc/pipeline/tour/running-multiple-steps/
+	 //https://stackoverflow.com/questions/35043665/change-windows-shell-in-jenkins-from-cygwin-to-git-bash-msys#:~:text=Go%20to%20Manage%20Jenkins%20%3E%20Configure,the%20Execute%20shell%20build%20step.&text=Note%3A%20This%20won't%20work,agents%20(JENKINS%2D38211).
 	 //sh 'echo "Hello World"'
          //sh '''
                //echo "Multiline shell steps works too"
@@ -120,7 +112,7 @@ pipeline {
             gv.buildProj()
           }
 	  echo '################################## Executing stage - Build Project ##################################' 
-          echo "Building ====> ${PROJECT_GROUP_ID}:${PROJECT_ARTIFACT_ID}:${PROJECT_VERSION}:${PROJECT_PACKAGING}" 	  
+          echo "Building for ====> ${PROJECT_GROUP_ID}:${PROJECT_ARTIFACT_ID}:${PROJECT_VERSION}:${PROJECT_PACKAGING}" 	  
 	  bat 'mvn clean install -Dmaven.test.skip=true'
           bat 'dir /p' 	
         }//steps
@@ -153,30 +145,28 @@ pipeline {
 	  ]){
 		//https://wiki.jenkins.io/display/JENKINS/Credentials%20Binding%20Plugin
 		echo "Connecting to Jenkins Server with ${USERNAME} and ${PASSWORD}"
+	  }	  
+	  timeout(time:3, unit:'HOURS') {
+	     //input message:'Do you want to proceed for Docker Image Building ?', submitter: 'DevOps-Team'
+	     input message:'Do you want to proceed for Docker Image Building ?'
 	  }
 	  script{
 	     //Ensure that docker(or docker swarm is configured) engine is installed in the Jenkins server and the Docker service is running.
+	     //-----For Docker Hub Registry----
 	     //https://www.jenkins.io/doc/book/pipeline/docker/
 	     //docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
                 //def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
                 //customImage.push()
              //}
+	       //-----For Nexus Registry----
 	       docker.withRegistry(NEXUS_NON_PROD_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
                def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
                customImage.push()
                }	     
 	  }//script
-	  
-	  
-	  //bat "docker images -a"
+	  	  
 	  bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
 	  bat "docker rmi ${NEXUS_REGISTRY_IMAGE}" 
-	  
-	  timeout(time:3, unit:'HOURS') {
-	     //input message:'Do you want to proceed for Image Building ?', submitter: 'DevOps-Team'
-	     input message:'Do you want to proceed for Image Building ?'
-	  }
-	  
         }//steps
      }//stage 
      
@@ -198,40 +188,38 @@ pipeline {
           }
 	  echo '################################## Executing stage - Build Docker Image ##################################'
 	  echo "Building docker image on Docker Prod Server ===================> ${DOCKER_PROD_SERVER}"
-           
-	  //script{
+          timeout(time:3, unit:'HOURS') {
+	     //input message:'Do you want to proceed for Docker Image Building ?', submitter: 'DevOps-Team'
+	     input message:'Do you want to proceed for Docker Image Building ?'
+	  } 
+	  script{
 	     //Ensure that docker(or docker swarm is configured) engine is installed in the Jenkins server and the Docker service is running.
 	     //https://www.jenkins.io/doc/book/pipeline/docker/
 	     //docker.withRegistry(DOCKER_NON-PROD_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
                 //def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
                 //customImage.push()
              //}
-	       //docker.withRegistry(NEXUS_NON-PROD_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
-               //def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
-               //customImage.push()
-               //}	     
-	  //}//script
+	       docker.withRegistry(NEXUS_NON-PROD_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
+               def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
+               customImage.push()
+               }	     
+	  }//script
 	  
-	  
-	  bat "docker images -a"
 	  bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
 	  bat "docker rmi ${NEXUS_REGISTRY_IMAGE}" 
-	  
-	  timeout(time:3, unit:'HOURS') {
-	     //input message:'Do you want to proceed for Image Building ?', submitter: 'DevOps-Team'
-	     input message:'Do you want to proceed for Image Building ?'
-	  }
-	  
         }//steps
      }//stage 
      
-     stage('Deploy Docker Image') { 
+     stage('Deploy Docker Image On Docker-NonProd') { 
         when {
              //anyof
 	     allOf{
 		expression { 
 		  env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*'
 	        }
+		expression {
+                  params.BuildEnvironment == 'default' || params.BuildEnvironment == 'dev' || params.BuildEnvironment == 'sit' || params.BuildEnvironment == 'uat' || params.BuildEnvironment == 'pt'                       		       
+                }
 	        expression {
                   params.CheckDeploy
                 }
@@ -240,17 +228,51 @@ pipeline {
 	steps {
 	  script {
             gv.deployImage()
-          }	
-	  
+          }		  
 	  echo '################################## Executing stage - Deploy Docker Image ##################################'
-          echo "Deploying docker image on ===================> ${DOCKER_NON_PROD_SERVER}"	  
-	  bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
-	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
-          //bat "docker ps -a"	  
-	  bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE}"
+          echo "Deploying docker image on ===================> ${DOCKER_NON_PROD_SERVER}"
+          timeout(time:3, unit:'HOURS') {
+	     //input message:'Do you want to deploy the image in non-prod server ?', submitter: 'DevOps-Team'
+	     input message:'Do you want to deploy the image in non-prod server ?'
+	  } 
 	  
+	  bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
+	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	  
+	  bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE}"	  
         }//steps
-     }//stage      
+     }//stage   
+
+     stage('Deploy Docker Image On Docker-Prod') { 
+        when {
+             //anyof
+	     allOf{
+		expression { 
+		  env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*'
+	        }
+		expression {
+                  params.BuildEnvironment == 'default' || params.BuildEnvironment == 'dev' || params.BuildEnvironment == 'sit' || params.BuildEnvironment == 'uat' || params.BuildEnvironment == 'pt'                       		       
+                }
+	        expression {
+                  params.CheckDeploy
+                }
+             }           
+        }     
+	steps {
+	  script {
+            gv.deployImage()
+          }		  
+	  echo '################################## Executing stage - Deploy Docker Image ##################################'
+          echo "Deploying docker image on ===================> ${DOCKER_PROD_SERVER}"
+          timeout(time:3, unit:'HOURS') {
+	     //input message:'Do you want to deploy the image in non-prod server ?', submitter: 'DevOps-Team'
+	     input message:'Do you want to deploy the image in prod server ?'
+	  } 
+	  
+	  bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
+	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	  
+	  bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE}"	  
+        }//steps
+     }//stage     
    }//stages
    
    post {
