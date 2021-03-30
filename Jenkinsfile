@@ -70,7 +70,7 @@ pipeline {
      stage('Prepare Build Job') {
 	steps { 
 	   script {
-             gv = load "groovy_script.groovy" 
+             gv = load "build_scripts/groovy_script.groovy" 
            }
 	   echo '################################## Executing stage - Prepare Build Job ##################################'	  
 	  //echo 'Reading Jenkinsfile...'
@@ -154,19 +154,19 @@ pipeline {
 	     //Ensure that docker(or docker swarm is configured) engine is installed in the Jenkins server and the Docker service is running.
 	     //-----For Docker Hub Registry----
 	     //https://www.jenkins.io/doc/book/pipeline/docker/
-	     //docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
-                //def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
-                //customImage.push()
-             //}
+	     docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
+                def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
+                customImage.push()
+             }
 	       //-----For Nexus Registry----
-	       docker.withRegistry(NEXUS_NON_PROD_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
-               def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
-               customImage.push()
-               }	     
+	       //docker.withRegistry(NEXUS_NON_PROD_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
+               //def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
+               //customImage.push()
+               //}	     
 	  }//script
 	  	  
-	  bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
-	  bat "docker rmi ${NEXUS_REGISTRY_IMAGE}" 
+	  bat "docker image ls ${DOCKER_REGISTRY_IMAGE}"
+	  bat "docker rmi ${DOCKER_REGISTRY_IMAGE}" 
         }//steps
      }//stage 
      
@@ -195,18 +195,18 @@ pipeline {
 	  script{
 	     //Ensure that docker(or docker swarm is configured) engine is installed in the Jenkins server and the Docker service is running.
 	     //https://www.jenkins.io/doc/book/pipeline/docker/
-	     //docker.withRegistry(DOCKER_NON-PROD_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
-                //def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
-                //customImage.push()
-             //}
-	       docker.withRegistry(NEXUS_NON-PROD_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
-               def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
-               customImage.push()
-               }	     
+	     docker.withRegistry(DOCKER_PROD_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
+                def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
+                customImage.push()
+             }
+	       //docker.withRegistry(NEXUS_PROD_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
+               //def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
+               //customImage.push()
+               //}	     
 	  }//script
 	  
-	  bat "docker image ls ${NEXUS_REGISTRY_IMAGE}"
-	  bat "docker rmi ${NEXUS_REGISTRY_IMAGE}" 
+	  bat "docker image ls ${DOCKER_REGISTRY_IMAGE}"
+	  bat "docker rmi ${DOCKER_REGISTRY_IMAGE}" 
         }//steps
      }//stage 
      
@@ -236,9 +236,9 @@ pipeline {
 	     input message:'Do you want to deploy the image in non-prod server ?'
 	  } 
 	  
-	  bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
-	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	  
-	  bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE}"	  
+	  bat "docker pull ${DOCKER_REGISTRY_IMAGE}"
+	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${DOCKER_REGISTRY_IMAGE}"	  
+	  bat "docker ps -aqf ancestor=${DOCKER_REGISTRY_IMAGE}"	  
         }//steps
      }//stage   
 
@@ -264,13 +264,13 @@ pipeline {
 	  echo '################################## Executing stage - Deploy Docker Image ##################################'
           echo "Deploying docker image on ===================> ${DOCKER_PROD_SERVER}"
           timeout(time:3, unit:'HOURS') {
-	     //input message:'Do you want to deploy the image in non-prod server ?', submitter: 'DevOps-Team'
+	     //input message:'Do you want to deploy the image in prod server ?', submitter: 'DevOps-Team'
 	     input message:'Do you want to deploy the image in prod server ?'
 	  } 
 	  
-	  bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
-	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	  
-	  bat "docker ps -aqf ancestor=${NEXUS_REGISTRY_IMAGE}"	  
+	  bat "docker pull ${DOCKER_REGISTRY_IMAGE}"
+	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${DOCKER_REGISTRY_IMAGE}"	  
+	  bat "docker ps -aqf ancestor=${DOCKER_REGISTRY_IMAGE}"	  
         }//steps
      }//stage     
    }//stages
