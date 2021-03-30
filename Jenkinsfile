@@ -46,17 +46,7 @@ pipeline {
      DOCKER_IMAGE_NAME = "msiddiq123/country-curd-rest-service"
      //DOCKER_IMAGE_TAG = "img-${env.BUILD_ID}"
      DOCKER_IMAGE_TAG = "${env.BRANCH_NAME}_${PROJECT_VERSION}"
-     DOCKER_REGISTRY_IMAGE = "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" 
-     
-     NEXUS_NON_PROD_SERVER = "192.168.1.35"
-     NEXUS_PROD_SERVER = "192.168.1.36"
-     NEXUS_NON_PROD_REGISTRY_URL = 'http://192.168.1.35:9191/'
-     NEXUS_PROD_REGISTRY_URL = 'http://192.168.1.35:9191/'
-     NEXUS_REGISTRY_CREDENTIALS = 'global-nexus-registry-credentials'
-     NEXUS_IMAGE_NAME = "192.168.1.35:9191/country-curd-rest-service"     
-     //NEXUS_IMAGE_TAG = "img-${env.BUILD_ID}"
-     NEXUS_IMAGE_TAG = "${env.BRANCH_NAME}_${PROJECT_VERSION}"
-     NEXUS_REGISTRY_IMAGE = "${NEXUS_IMAGE_NAME}:${NEXUS_IMAGE_TAG}"     
+     DOCKER_REGISTRY_IMAGE = "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"           
    }
    
    options {     
@@ -72,9 +62,7 @@ pipeline {
 	   script {
              gv = load "build_scripts/groovy_script.groovy" 
            }
-	   echo '################################## Executing stage - Prepare Build Job ##################################'	  
-	  //echo 'Reading Jenkinsfile...'
-	  //bat 'type Jenkinsfile'
+	  echo '################################## Executing stage - Prepare Build Job ##################################'	  
           echo "M2_HOME ====> ${M2_HOME}"
 	  echo "PATH ====> ${PATH}"
 	  echo 'Checking maven version...'
@@ -121,8 +109,7 @@ pipeline {
      stage('Build Image On Docker-NonProd') { 
         when { 
            allOf{
-		   expression { 
-		     //https://intellipaat.com/community/7453/whats-the-pattern-evaluation-on-jenkinsfile-when-branch-setting
+		   expression { 		    
 		     env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*' 
 		   }
 		   expression {
@@ -136,35 +123,16 @@ pipeline {
           }
 	  echo '################################## Executing stage - Build Docker Image ##################################'
 	  echo "Building docker image on Docker NonProd Server ===================> ${DOCKER_NON_PROD_SERVER}"
-          //echo 'Reading Dockerfile...'
-	  //bat 'type Dockerfile'	  
-	  
-	  //Using Jenkins Credentials only for a particular stage
-	  withCredentials([
-	      usernamePassword(credentialsId: 'global-jenkins-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
-	  ]){
-		//https://wiki.jenkins.io/display/JENKINS/Credentials%20Binding%20Plugin
-		echo "Connecting to Jenkins Server with ${USERNAME} and ${PASSWORD}"
-	  }	  
-	  //timeout(time:3, unit:'HOURS') {
-	     //input message:'Do you want to proceed for Docker Image Building ?', submitter: 'DevOps-Team'
-	     //input message:'Do you want to proceed for Docker Image Building ?'
-	  //}
+          echo 'Reading Dockerfile...'
+	  bat 'type Dockerfile'	  
 	  script{
-	     //Ensure that docker(or docker swarm is configured) engine is installed in the Jenkins server and the Docker service is running.
-	     //-----For Docker Hub Registry----
 	     //https://www.jenkins.io/doc/book/pipeline/docker/
 	     docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
                 def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
                 customImage.push()
-             }
-	       //-----For Nexus Registry----
-	       //docker.withRegistry(NEXUS_NON_PROD_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
-               //def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
-               //customImage.push()
-               //}	     
-	  }//script
-	  	  
+             }	     
+	  }//script	 
+ 	  
 	  bat "docker image ls ${DOCKER_REGISTRY_IMAGE}"
 	  bat "docker rmi ${DOCKER_REGISTRY_IMAGE}" 
         }//steps
@@ -173,8 +141,7 @@ pipeline {
      stage('Build Image On Docker-Prod') { 
         when { 
            allOf{
-		expression { 	
-		  //env.BRANCH_NAME != 'master'; OR !(env.BRANCH_NAME = 'master')	
+		expression { 		
 		  env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*' 
 		}
 		expression {
@@ -188,21 +155,13 @@ pipeline {
           }
 	  echo '################################## Executing stage - Build Docker Image ##################################'
 	  echo "Building docker image on Docker Prod Server ===================> ${DOCKER_PROD_SERVER}"
-          timeout(time:3, unit:'HOURS') {
-	     //input message:'Do you want to proceed for Docker Image Building ?', submitter: 'DevOps-Team'
-	     input message:'Do you want to proceed for Docker Image Building ?'
-	  } 
+	  echo 'Reading Dockerfile...'
+	  bat 'type Dockerfile'
 	  script{
-	     //Ensure that docker(or docker swarm is configured) engine is installed in the Jenkins server and the Docker service is running.
-	     //https://www.jenkins.io/doc/book/pipeline/docker/
 	     docker.withRegistry(DOCKER_PROD_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
                 def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
                 customImage.push()
-             }
-	       //docker.withRegistry(NEXUS_PROD_REGISTRY_URL, NEXUS_REGISTRY_CREDENTIALS) {
-               //def customImage = docker.build(NEXUS_REGISTRY_IMAGE)               
-               //customImage.push()
-               //}	     
+             }	     
 	  }//script
 	  
 	  bat "docker image ls ${DOCKER_REGISTRY_IMAGE}"
@@ -231,10 +190,6 @@ pipeline {
           }		  
 	  echo '################################## Executing stage - Deploy Docker Image ##################################'
           echo "Deploying docker image on ===================> ${DOCKER_NON_PROD_SERVER}"
-          //timeout(time:3, unit:'HOURS') {
-	     //input message:'Do you want to deploy the image in non-prod server ?', submitter: 'DevOps-Team'
-	     //input message:'Do you want to deploy the image in non-prod server ?'
-	  //} 
 	  
 	  bat "docker pull ${DOCKER_REGISTRY_IMAGE}"
 	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${DOCKER_REGISTRY_IMAGE}"	  
@@ -250,7 +205,7 @@ pipeline {
 		  env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*'
 	        }
 		expression {
-                  params.BuildEnvironment == 'default' || params.BuildEnvironment == 'dev' || params.BuildEnvironment == 'sit' || params.BuildEnvironment == 'uat' || params.BuildEnvironment == 'pt'                       		       
+                  params.BuildEnvironment == 'prod'
                 }
 	        expression {
                   params.CheckDeploy
@@ -263,10 +218,6 @@ pipeline {
           }		  
 	  echo '################################## Executing stage - Deploy Docker Image ##################################'
           echo "Deploying docker image on ===================> ${DOCKER_PROD_SERVER}"
-          timeout(time:3, unit:'HOURS') {
-	     //input message:'Do you want to deploy the image in prod server ?', submitter: 'DevOps-Team'
-	     input message:'Do you want to deploy the image in prod server ?'
-	  } 
 	  
 	  bat "docker pull ${DOCKER_REGISTRY_IMAGE}"
 	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${DOCKER_REGISTRY_IMAGE}"	  
@@ -276,10 +227,8 @@ pipeline {
    }//stages
    
    post {
-     //https://plugins.jenkins.io/email-ext/
      always {
-	echo '################################## Executing post [always] handler ##################################'
-       
+	echo '################################## Executing post [always] handler ##################################'       
         emailext attachLog: true,
 	compressLog: true,
 	to: 'maroof.siddique2013@gmail.com',
@@ -291,7 +240,7 @@ pipeline {
      success {
         echo '################################## Executing post [success] handler ##################################'        
 	echo 'Job execution succeded...'
-	build job: 'maven-freestyle-test-job', parameters: [[$class: 'BooleanParameterValue', name: 'CodeScan', value: true], [$class: 'BooleanParameterValue', name: 'UnitTest', value: true]]	
+	//build job: 'maven-freestyle-test-job', parameters: [[$class: 'BooleanParameterValue', name: 'CodeScan', value: true], [$class: 'BooleanParameterValue', name: 'UnitTest', value: true]]	
      }
      
      failure {
