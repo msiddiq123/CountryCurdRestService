@@ -37,7 +37,7 @@ pipeline {
      PROJECT_VERSION = pom.getVersion()
      PROJECT_PACKAGING = pom.getPackaging()
      
-     DOCKER_NON-PROD_REGISTRY_URL = 'https://registry.hub.docker.com/'
+     DOCKER_NON_PROD_REGISTRY_URL = 'https://registry.hub.docker.com/'
      DOCKER_PROD_REGISTRY_URL = 'https://index.docker.io/v1/'
      DOCKER_REGISTRY_CREDENTIALS = 'global-docker-registry-credentials'
      DOCKER_IMAGE_NAME = "msiddiq123/country-curd-rest-service"
@@ -45,7 +45,7 @@ pipeline {
      DOCKER_IMAGE_TAG = "${env.BRANCH_NAME}_${PROJECT_VERSION}"
      DOCKER_REGISTRY_IMAGE = "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" 
      
-     NEXUS_NON-PROD_REGISTRY_URL = 'http://192.168.1.35:9191/'
+     NEXUS_NON_PROD_REGISTRY_URL = 'http://192.168.1.35:9191/'
      NEXUS_PROD_REGISTRY_URL = 'http://192.168.1.36:9191/'
      NEXUS_REGISTRY_CREDENTIALS = 'global-nexus-registry-credentials'
      NEXUS_IMAGE_NAME = "192.168.1.35:9191/country-curd-rest-service"     
@@ -140,7 +140,7 @@ pipeline {
             gv.buildImage()
           }
 	  echo '################################## Executing stage - Build Docker Image ##################################'
-	  echo "Building docker image on Docker NonProd Server ===================> ${NEXUS_NON-PROD_REGISTRY_URL}"
+	  echo "Building docker image on Docker NonProd Server ===================> ${NEXUS_NON_PROD_REGISTRY_URL}"
           //echo 'Reading Dockerfile...'
 	  //bat 'type Dockerfile'	  
 	  
@@ -239,8 +239,7 @@ pipeline {
           }	
 	  
 	  echo '################################## Executing stage - Deploy Docker Image ##################################'
-
-          echo "Deploying docker image on ===================> ${NEXUS_NON-PROD_REGISTRY_URL}"	  
+          echo "Deploying docker image on ===================> ${NEXUS_NON_PROD_REGISTRY_URL}"	  
 	  //bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
 	  //bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
           //bat "docker ps -a"	  
