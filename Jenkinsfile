@@ -37,6 +37,8 @@ pipeline {
      PROJECT_VERSION = pom.getVersion()
      PROJECT_PACKAGING = pom.getPackaging()
      
+     DOCKER_NON_PROD_SERVER = "192.168.1.35"
+     DOCKER_PROD_SERVER = "192.168.1.36"
      DOCKER_NON_PROD_REGISTRY_URL = 'https://registry.hub.docker.com/'
      DOCKER_PROD_REGISTRY_URL = 'https://index.docker.io/v1/'
      DOCKER_REGISTRY_CREDENTIALS = 'global-docker-registry-credentials'
@@ -45,8 +47,10 @@ pipeline {
      DOCKER_IMAGE_TAG = "${env.BRANCH_NAME}_${PROJECT_VERSION}"
      DOCKER_REGISTRY_IMAGE = "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" 
      
+     NEXUS_NON_PROD_SERVER = "192.168.1.35"
+     NEXUS_PROD_SERVER = "192.168.1.36"
      NEXUS_NON_PROD_REGISTRY_URL = 'http://192.168.1.35:9191/'
-     NEXUS_PROD_REGISTRY_URL = 'http://192.168.1.36:9191/'
+     NEXUS_PROD_REGISTRY_URL = 'http://192.168.1.35:9191/'
      NEXUS_REGISTRY_CREDENTIALS = 'global-nexus-registry-credentials'
      NEXUS_IMAGE_NAME = "192.168.1.35:9191/country-curd-rest-service"     
      //NEXUS_IMAGE_TAG = "img-${env.BUILD_ID}"
@@ -140,7 +144,7 @@ pipeline {
             gv.buildImage()
           }
 	  echo '################################## Executing stage - Build Docker Image ##################################'
-	  echo "Building docker image on Docker NonProd Server ===================> ${NEXUS_NON_PROD_REGISTRY_URL}"
+	  echo "Building docker image on Docker NonProd Server ===================> ${DOCKER_NON_PROD_SERVER}"
           //echo 'Reading Dockerfile...'
 	  //bat 'type Dockerfile'	  
 	  
@@ -193,7 +197,7 @@ pipeline {
             gv.buildImage()
           }
 	  echo '################################## Executing stage - Build Docker Image ##################################'
-	  echo "Building docker image on Docker Prod Server ===================> ${NEXUS_PROD_REGISTRY_URL}"
+	  echo "Building docker image on Docker Prod Server ===================> ${DOCKER_PROD_SERVER}"
            
 	  //script{
 	     //Ensure that docker(or docker swarm is configured) engine is installed in the Jenkins server and the Docker service is running.
@@ -239,7 +243,7 @@ pipeline {
           }	
 	  
 	  echo '################################## Executing stage - Deploy Docker Image ##################################'
-          echo "Deploying docker image on ===================> ${NEXUS_NON_PROD_REGISTRY_URL}"	  
+          echo "Deploying docker image on ===================> ${DOCKER_NON_PROD_SERVER}"	  
 	  //bat "docker pull ${NEXUS_REGISTRY_IMAGE}"
 	  //bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${NEXUS_REGISTRY_IMAGE}"	
           //bat "docker ps -a"	  
