@@ -146,10 +146,10 @@ pipeline {
 		//https://wiki.jenkins.io/display/JENKINS/Credentials%20Binding%20Plugin
 		echo "Connecting to Jenkins Server with ${USERNAME} and ${PASSWORD}"
 	  }	  
-	  timeout(time:3, unit:'HOURS') {
+	  //timeout(time:3, unit:'HOURS') {
 	     //input message:'Do you want to proceed for Docker Image Building ?', submitter: 'DevOps-Team'
-	     input message:'Do you want to proceed for Docker Image Building ?'
-	  }
+	     //input message:'Do you want to proceed for Docker Image Building ?'
+	  //}
 	  script{
 	     //Ensure that docker(or docker swarm is configured) engine is installed in the Jenkins server and the Docker service is running.
 	     //-----For Docker Hub Registry----
@@ -231,10 +231,10 @@ pipeline {
           }		  
 	  echo '################################## Executing stage - Deploy Docker Image ##################################'
           echo "Deploying docker image on ===================> ${DOCKER_NON_PROD_SERVER}"
-          timeout(time:3, unit:'HOURS') {
+          //timeout(time:3, unit:'HOURS') {
 	     //input message:'Do you want to deploy the image in non-prod server ?', submitter: 'DevOps-Team'
-	     input message:'Do you want to deploy the image in non-prod server ?'
-	  } 
+	     //input message:'Do you want to deploy the image in non-prod server ?'
+	  //} 
 	  
 	  bat "docker pull ${DOCKER_REGISTRY_IMAGE}"
 	  bat "docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 ${DOCKER_REGISTRY_IMAGE}"	  
