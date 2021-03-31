@@ -15,7 +15,7 @@ pipeline {
     
    parameters {         
      choice(name: 'BuildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n NOTE:- Run commands like - docker rmi <image-id>, docker stop <container-id> and docker rmi <container-id> before triggering the build.')     
-     booleanParam(name: 'SkipJunit', defaultValue: true, description: 'This flag will check if the job will proceed with deployment')
+     booleanParam(name: 'SkipJunit', defaultValue: true, description: 'This flag will check if the junit test will run or skip')
      booleanParam(name: 'SkipDeploy', defaultValue: false, description: 'This flag will check if the job will proceed with deployment')
    }
    
@@ -74,12 +74,46 @@ pipeline {
 	     @echo off
 	     echo 'Git Branch ==========' %BRANCH_NAME%
              echo 'Packaging for ==========' %PROJECT_GROUP_ID%:%PROJECT_ARTIFACT_ID%:%PROJECT_VERSION%:%PROJECT_PACKAGING%
-	     echo 'SKIP_JUNIT' %SKIP_JUNIT%
-             mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%
-	     
+	     echo 'Skip Junit Test ==========' %SKIP_JUNIT%
+             mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%	     
 	  '''   
         }//steps
      }//stage
+     
+     stage('Docker Build') { 
+        when { 
+           allOf{
+		  expression { 		    
+		     env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*' 
+		  }
+		  expression {
+                     params.BuildEnvironment == 'default' || params.BuildEnvironment == 'dev' || params.BuildEnvironment == 'sit' || params.BuildEnvironment == 'uat' || params.BuildEnvironment == 'pt'                       		       
+                  }
+           } 	              
+        }     
+	steps {
+	  echo '################################## Stage - Docker Build ##################################'
+	   script{
+	  bat '''
+	     @echo off
+	     echo 'Building docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%
+	     echo 'Reading Dockerfile...'
+	     type Dockerfile
+	  '''
+	  }
+	   
+	  script{
+	     //https://www.jenkins.io/doc/book/pipeline/docker/
+	     docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
+                def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
+                customImage.push()
+             }	     
+	  }//script	 
+ 	  
+	  bat "docker image ls ${DOCKER_REGISTRY_IMAGE}"
+	  bat "docker rmi ${DOCKER_REGISTRY_IMAGE}" 
+        }//steps
+     }//stage 
    }//stages
     
       
