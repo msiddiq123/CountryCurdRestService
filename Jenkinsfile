@@ -98,9 +98,9 @@ pipeline {
 	     bat '''
 	        @echo off
 	        echo 'Building docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%
-	        //type Dockerfile
 		docker login -u msiddiq123 -p Msiddiq@123 https://registry.hub.docker.com/
 		docker build -t %DOCKER_REGISTRY_IMAGE% .
+		docker tag msiddiq123/country-curd-rest-service:master_0.0.1-SNAPSHOT msiddiq123/country-curd-rest-service:master_0.0.1-SNAPSHOT 
 		docker push %DOCKER_REGISTRY_IMAGE%
 	     '''
 
