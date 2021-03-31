@@ -93,25 +93,34 @@ pipeline {
         }     
 	steps {
 	  echo '################################## Stage - Docker Build ##################################'
-	   script{
-	  bat '''
-	     @echo off
-	     echo 'Building docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%
-	     echo 'Reading Dockerfile...'
-	     type Dockerfile
-	  '''
+	  script{
+	     bat '''
+	        @echo off
+	        echo 'Building docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%
+	        echo 'Reading Dockerfile...'
+	        type Dockerfile
+	     '''
+	     
+	     //https://www.jenkins.io/doc/book/pipeline/docker/
+	     docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_NON_PROD_REGISTRY_CREDENTIALS) {
+                def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
+                customImage.push()
+             }	
+	     
+	     bat '''
+	        @echo off
+	        docker image ls %DOCKER_REGISTRY_IMAGE%
+	        docker rmi %DOCKER_REGISTRY_IMAGE% 
+	     '''
 	  }
 	   
 	  script{
 	     //https://www.jenkins.io/doc/book/pipeline/docker/
-	     docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_REGISTRY_CREDENTIALS) {
+	     docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_NON_PROD_REGISTRY_CREDENTIALS) {
                 def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
                 customImage.push()
              }	     
 	  }//script	 
- 	  
-	  bat "docker image ls ${DOCKER_REGISTRY_IMAGE}"
-	  bat "docker rmi ${DOCKER_REGISTRY_IMAGE}" 
         }//steps
      }//stage 
    }//stages
