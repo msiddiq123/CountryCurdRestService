@@ -51,7 +51,8 @@ pipeline {
      stage('Initialize') {
 	steps { 
 	  echo '################################## Stage - Initialize ##################################'
-          //Use bat for windows and sh for Linux hosts/nodes          
+          //Use bat for windows and sh for Linux hosts/nodes 
+         //https://www.robvanderwoude.com/escapechars.php
 	  bat '''
 	     @echo off
 	     echo 'M2_HOME ==========' %M2_HOME%
@@ -97,15 +98,17 @@ pipeline {
 	     bat '''
 	        @echo off
 	        echo 'Building docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%
-	        echo 'Reading Dockerfile...'
-	        type Dockerfile
+	        //type Dockerfile
+		docker login -u msiddiq123 -p Msiddiq@123 https://registry.hub.docker.com/
+		docker build -t %DOCKER_REGISTRY_IMAGE% .
+		docker push %DOCKER_REGISTRY_IMAGE%
 	     '''
 	     
 	     //https://www.jenkins.io/doc/book/pipeline/docker/
-	     docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_NON_PROD_REGISTRY_CREDENTIALS) {
-                def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
-                customImage.push()
-             }	
+	     //docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_NON_PROD_REGISTRY_CREDENTIALS) {
+                //def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
+                //customImage.push()
+             //}	
 	     
 	     bat '''
 	        @echo off

@@ -3,12 +3,14 @@
 	#2)Docker Hub Login/Logout - docker system info / docker login / docker logout / docker login -u msiddiq123 -p **** https://index.docker.io/v1  
 	#                          - NB:-Your email and your docker id are 2 separate things. It looks like you can use your email to log in the site but not the CLI. 
 	#3)Docker Build Image - docker build -t msiddiq123/country-curd-rest-service:dev-1.0 .
+	##docker tag msiddiq123/country-curd-rest-service:master_0.0.1-SNAPSHOT registry.hub.docker.com/msiddiq123/country-curd-rest-service:master_0.0.1-SNAPSHOT 
 	#4)Docker List Images - docker image ls  OR docker images -a
 	#                     - docker image ls msiddiq123/country-curd-rest-service --format '{{.ID}}'
 	#		      - docker image ls msiddiq123/country-curd-rest-service:dev-1.0 --format '{{.ID}}'
 	#		      - docker images -a 192.168.1.35:9191/country-curd-rest-service --format '{{.ID}}'
         #                     - docker images -a 192.168.1.35:9191/country-curd-rest-service:img-44 --format '{{.ID}}'
 	#5)Docker Hub Push - docker push msiddiq123/country-curd-rest-service:dev-1.0
+	##docker push registry.hub.docker.com/msiddiq123/country-curd-rest-service:master_0.0.1-SNAPSHOT 
 	#6)Docker Image Delete (from Local) - docker rmi msiddiq123/country-curd-rest-service:dev-1.0
 	#7)Docker Hub Pull - docker pull msiddiq123/country-curd-rest-service:dev-1.0
 	#8)Docker Run Image - docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 msiddiq123/country-curd-rest-service:dev-1.0
