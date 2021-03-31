@@ -58,9 +58,9 @@ pipeline {
    stages {   
      stage('Prepare Job') {
 	steps { 
-	  echo "################################## Executing stage - Prepare Build Job ##################################"
-          pwd
-	  ls -lah
+	  sh 'echo "################################## Executing stage - Prepare Build Job ##################################"'
+          sh pwd
+	  sh ls -lah
 	 //-----For Linux----
 	 //https://www.youtube.com/watch?v=vL3Yy4rtLjE
 	 //https://www.youtube.com/watch?v=bGqS0f4Utn4
