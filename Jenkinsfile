@@ -49,17 +49,19 @@ pipeline {
      
    stages {   
      stage('Initialize') {
-	steps { 
-	  echo '################################## Stage - Initialize ##################################'
+	steps { 	  
           //Use bat for windows and sh for Linux hosts/nodes 
-         //https://www.robvanderwoude.com/escapechars.php
-	  bat '''
-	     @echo off
-	     echo 'M2_HOME ==========' %M2_HOME%
-	     echo 'PATH ==========' %PATH%
-	     mvn -version
-	     docker -v
+          //https://www.robvanderwoude.com/escapechars.php
+	  script{
+	    bat '''
+	      @echo off
+	      echo '################################## Stage - Initialize ##################################'
+	      echo 'M2_HOME ==========' %M2_HOME%
+	      echo 'PATH ==========' %PATH%
+	      mvn -version
+	      docker -v
 	  '''   
+	  }//script	  
         }//steps
      }//stage
      
@@ -69,15 +71,17 @@ pipeline {
 		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*' 
 	   }
         }
-	steps { 
-	  echo '################################## Stage - Maven Build ##################################'        
-	  bat '''
-	     @echo off
-	     echo 'Git Branch ==========' %BRANCH_NAME%
-             echo 'Packaging for ==========' %PROJECT_GROUP_ID%:%PROJECT_ARTIFACT_ID%:%PROJECT_VERSION%:%PROJECT_PACKAGING%
-	     echo 'Skip Junit Test ==========' %SKIP_JUNIT%
-             mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%	     
-	  '''   
+	steps {
+          script{
+	    bat '''
+	      @echo off
+	      echo '################################## Stage - Maven Build ##################################' 
+	      echo 'Git Branch ==========' %BRANCH_NAME%
+              echo 'Packaging for ==========' %PROJECT_GROUP_ID%:%PROJECT_ARTIFACT_ID%:%PROJECT_VERSION%:%PROJECT_PACKAGING%
+	      echo 'Skip Junit Test ==========' %SKIP_JUNIT%
+              mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%	     
+	    '''   
+	  }//script	  
         }//steps
      }//stage
      
@@ -92,11 +96,11 @@ pipeline {
                   }
            } 	              
         }     
-	steps {
-	  echo '################################## Stage - Docker Build ##################################'
+	steps {	  
 	  script{
 	     bat '''
 	        @echo off
+		echo '################################## Stage - Docker Build ##################################'
 	        echo 'Building docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%
 	     '''
 	     
@@ -107,14 +111,44 @@ pipeline {
              }
 
 	     bat '''
-	        @echo off
+	        @echo off		
 	        docker image ls -a
+		//docker image ls %DOCKER_REGISTRY_IMAGE%
 	        docker rmi %DOCKER_REGISTRY_IMAGE%
 		docker rmi registry.hub.docker.com/%DOCKER_REGISTRY_IMAGE%
 	     '''
 	  }//script 
         }//steps
-     }//stage 
+     }//stage
+
+     stage('Docker Deploy') { 
+        when { 
+           allOf{
+		  expression { 		    
+		     env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*' 
+		  }
+		  expression {
+                     params.BuildEnvironment == 'default' || params.BuildEnvironment == 'dev' || params.BuildEnvironment == 'sit' || params.BuildEnvironment == 'uat' || params.BuildEnvironment == 'pt'                       		       
+                  }
+		  expression {
+                     params.SkipDeploy == false
+                  }
+           } 	              
+        }     
+	steps {
+	  script{
+	     bat '''
+	        @echo off
+		echo '################################## Stage - Docker Deploy ##################################'
+	        echo 'Deploying docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%		
+		docker pull %DOCKER_REGISTRY_IMAGE%
+	        docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 %DOCKER_REGISTRY_IMAGE%	  
+		docker ps -a
+	        //docker ps -aqf ancestor=%DOCKER_REGISTRY_IMAGE%
+	     '''
+	  }//script 
+        }//steps
+     }//stage      
    }//stages
    
    post {
