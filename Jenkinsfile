@@ -59,7 +59,8 @@ pipeline {
      stage('Prepare Job') {
 	steps { 
 	  //sh 'echo "################################## Executing stage - Prepare Build Job ##################################"'
-          sh 'cat Dockerfile' 
+          echo "PATH ====> ${PATH}"
+	  sh 'cat Dockerfile' 
 	 //-----For Linux----
 	 //https://www.youtube.com/watch?v=bGqS0f4Utn4
 	 //https://www.jenkins.io/doc/pipeline/tour/running-multiple-steps/
