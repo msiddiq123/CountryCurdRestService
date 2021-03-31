@@ -58,19 +58,14 @@ pipeline {
    stages {   
      stage('Prepare Job') {
 	steps { 
-	  //sh 'echo "################################## Executing stage - Prepare Build Job ##################################"'
-          echo "PATH ====> ${PATH}"
-	  sh 'cat Dockerfile' 
-	 //-----For Linux----
-	 //https://www.youtube.com/watch?v=bGqS0f4Utn4
-	 //https://www.jenkins.io/doc/pipeline/tour/running-multiple-steps/
-	 //https://stackoverflow.com/questions/35043665/change-windows-shell-in-jenkins-from-cygwin-to-git-bash-msys#:~:text=Go%20to%20Manage%20Jenkins%20%3E%20Configure,the%20Execute%20shell%20build%20step.&text=Note%3A%20This%20won't%20work,agents%20(JENKINS%2D38211).
-	 //sh 'echo "Hello World"'
-        
-	//sh '''
-               //echo "Multiline shell steps works too"
-               //ls -lah
-          //'''	    
+	  echo "################################## Executing stage - Prepare Build Job ##################################"
+          
+	  bat '''
+	     echo "M2_HOME ====> ${M2_HOME}"
+	     echo "PATH ====> ${PATH}" 
+	     mvn -version
+	     docker -v
+	  '''   
         }//steps
      }//stage
     }//stages
