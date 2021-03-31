@@ -112,18 +112,9 @@ pipeline {
 	        docker image ls %DOCKER_REGISTRY_IMAGE%
 	        docker rmi %DOCKER_REGISTRY_IMAGE% 
 	     '''
-	  }
-	   
-	  script{
-	     //https://www.jenkins.io/doc/book/pipeline/docker/
-	     docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_NON_PROD_REGISTRY_CREDENTIALS) {
-                def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
-                customImage.push()
-             }	     
-	  }//script	 
+	  }//script 
         }//steps
      }//stage 
    }//stages
-    
-      
+          
 }//pipeline
