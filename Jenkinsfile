@@ -3,19 +3,11 @@
 //b)Here we are assuming that the maven build and docker build are happening in the same box where Jenkins server is installed
 //c)We are creating a container with replica=1
 //d)For 'country-curd-rest-service-job' mutibranch pipeline job, it creates a folder with this name in jenkins dashboard and creates child jobs inside this folder for each of the branches...so you can only configure the parent job and not the child jobs
-//Reference:-
-//a)https://www.jenkins.io/doc/book/pipeline/
-//b)https://www.youtube.com/watch?v=B_2FXWI6CWg
 
 
 pipeline {
 
    agent any
-   
-    //triggers {
-      //Will run at every 30 minutes (may be at XX:01,XX:31 ..)
-      //cron('*/30 * * * *')
-    //}
    
    tools {
      maven 'Jenkins-Maven'
@@ -51,25 +43,40 @@ pipeline {
    options {     
      timestamps()
      timeout(time: 15, unit: 'MINUTES')   
-     buildDiscarder(logRotator(numToKeepStr: '15'))
-     //retry(2)     
+     buildDiscarder(logRotator(numToKeepStr: '15'))  
    }
      
    stages {   
-     stage('Prepare Job') {
+     stage('Initialize') {
 	steps { 
-	  echo "################################## Executing stage - Prepare Build Job ##################################"
-          
+	  echo '################################## Stage - Initialize ##################################'
+          //Use bat for windows and sh for Linux hosts/nodes          
 	  bat '''
 	     @echo off
-	     echo 'M2_HOME ====' %M2_HOME%
-	     echo 'PATH ====' %PATH%
+	     echo 'M2_HOME ==========' %M2_HOME%
+	     echo 'PATH ==========' %PATH%
 	     mvn -version
 	     docker -v
 	  '''   
         }//steps
      }//stage
-    }//stages
+     
+     stage('Maven Build') {
+        when {               
+           expression { 
+		env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'feature-*' || env.BRANCH_NAME == 'release-*' 
+	   }
+        }
+	steps { 
+	  echo '################################## Stage - Maven Build ##################################'        
+	  bat '''
+	     @echo off
+	     echo 'Git Branch ==========' %env.BRANCH_NAME%
+             echo 'Building for ========== $PROJECT_GROUP_ID' 	     
+	  '''   
+        }//steps
+     }//stage
+   }//stages
     
       
 }//pipeline
