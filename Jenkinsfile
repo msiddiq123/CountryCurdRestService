@@ -61,8 +61,8 @@ pipeline {
 	  echo "################################## Executing stage - Prepare Build Job ##################################"
           
 	  bat '''
-	     echo 'M2_HOME ====>' %M2_HOME%
-	     echo 'PATH ====> %PATH%'
+	     echo 'M2_HOME ====' %M2_HOME%
+	     echo 'PATH ====' %PATH%
 	     mvn -version
 	     docker -v
 	  '''   
