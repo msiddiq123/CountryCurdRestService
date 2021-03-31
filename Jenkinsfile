@@ -30,10 +30,8 @@ pipeline {
      PROJECT_PACKAGING = pom.getPackaging()
      
      DOCKER_NON_PROD_SERVER = "192.168.1.35"
-     DOCKER_PROD_SERVER = "192.168.1.36"
      DOCKER_NON_PROD_REGISTRY_URL = 'https://registry.hub.docker.com/'
-     DOCKER_PROD_REGISTRY_URL = 'https://index.docker.io/v1/'
-     DOCKER_REGISTRY_CREDENTIALS = 'global-docker-registry-credentials'
+     DOCKER_NON_PROD_REGISTRY_CREDENTIALS = 'global-docker-registry-credentials'
      DOCKER_IMAGE_NAME = "msiddiq123/country-curd-rest-service"
      //DOCKER_IMAGE_TAG = "img-${env.BUILD_ID}"
      DOCKER_IMAGE_TAG = "${env.BRANCH_NAME}_${PROJECT_VERSION}"
