@@ -72,7 +72,7 @@ pipeline {
 	  bat '''
 	     @echo off
 	     echo 'Git Branch ==========' %env.BRANCH_NAME%
-             echo 'Building for ========== ${PROJECT_GROUP_ID}' 	     
+             echo 'Building for ==========' %PROJECT_GROUP_ID% 	     
 	  '''   
         }//steps
      }//stage
