@@ -98,11 +98,13 @@ pipeline {
 	     bat '''
 	        @echo off
 	        echo 'Building docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%
-		docker login -u msiddiq123 -p Msiddiq@123 https://registry.hub.docker.com/
-		docker build -t %DOCKER_REGISTRY_IMAGE% .
-		docker tag msiddiq123/country-curd-rest-service:master_0.0.1-SNAPSHOT msiddiq123/country-curd-rest-service:master_0.0.1-SNAPSHOT 
-		docker push %DOCKER_REGISTRY_IMAGE%
 	     '''
+	     
+	     //https://www.jenkins.io/doc/book/pipeline/docker/
+	     docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_NON_PROD_REGISTRY_CREDENTIALS) {
+                def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
+                customImage.push()
+             }
 
 	     bat '''
 	        @echo off
