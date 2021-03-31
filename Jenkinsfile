@@ -71,7 +71,8 @@ pipeline {
 	  echo '################################## Stage - Maven Build ##################################'        
 	  bat '''
 	     @echo off
-	     echo '"Git Branch ========== ${env.BRANCH_NAME}"'
+	     echo 'Git Branch ==========' ${env.BRANCH_NAME}
+	     echo 'Git Branch ==========' %BRANCH_NAME%
              echo 'Packaging for ==========' %PROJECT_GROUP_ID%:%PROJECT_ARTIFACT_ID%:%PROJECT_VERSION%:%PROJECT_PACKAGING%	     
 	  '''   
         }//steps
