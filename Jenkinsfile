@@ -72,7 +72,7 @@ pipeline {
           '''	    
         }//steps
      }//stage
-     
+    }//stages
     
       
 }//pipeline
