@@ -99,7 +99,7 @@ pipeline {
 	        @echo off
 	        echo 'Building docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%
 	        //type Dockerfile
-		docker login -u msiddiq123 -p Msiddiq@123 https://registry.hub.docker.com/
+		docker login -u msiddiq123 -p Msiddiq@123 https://index.docker.io/v1
 		docker build -t %DOCKER_REGISTRY_IMAGE% .
 		docker push %DOCKER_REGISTRY_IMAGE%
 	     '''
