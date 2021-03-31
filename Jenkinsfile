@@ -71,8 +71,9 @@ pipeline {
 	     @echo off
 	     echo 'Git Branch ==========' %BRANCH_NAME%
              echo 'Packaging for ==========' %PROJECT_GROUP_ID%:%PROJECT_ARTIFACT_ID%:%PROJECT_VERSION%:%PROJECT_PACKAGING%
-             mvn clean install -Dmaven.test.skip=true
 	     echo 'params.CheckDeploy' params.CheckDeploy
+             mvn clean install -Dmaven.test.skip=true
+	     
 	  '''   
         }//steps
      }//stage
