@@ -108,12 +108,23 @@ pipeline {
 
 	     bat '''
 	        @echo off
-	        docker image ls %DOCKER_REGISTRY_IMAGE%
-	        docker rmi %DOCKER_REGISTRY_IMAGE% 
+	        docker image ls -a
+	        docker rmi %DOCKER_REGISTRY_IMAGE%
+		docker rmi registry.hub.docker.com/%DOCKER_REGISTRY_IMAGE%
 	     '''
 	  }//script 
         }//steps
      }//stage 
    }//stages
-          
+   
+   post {
+     always {
+	echo '################################## Executing post [always] handler ##################################'       
+        emailext attachLog: true,
+	to: 'maroof.siddique2013@gmail.com',
+        subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${env.BRANCH_NAME} - ${BUILD_ENV} - ${currentBuild.result} !",
+	mimeType: 'text/plain',
+        body: "Hi Team, \n\n Please find the build and console log details below:- \n\n Job Name :: ${env.JOB_NAME} \n GIT Branch :: ${env.BRANCH_NAME} \n GIT Commit ID :: ${env.GIT_COMMIT} \n Project GroupId :: ${PROJECT_GROUP_ID} \n Project ArtifactID :: ${PROJECT_ARTIFACT_ID} \n Project Version :: ${PROJECT_VERSION} \n Project Packaging :: ${PROJECT_PACKAGING} \n Build No. :: ${env.BUILD_NUMBER} \n Build Environment :: ${BUILD_ENV} \n Build Status :: ${currentBuild.result} \n Please find the build and console log details at ${env.BUILD_URL} \n\n Thanks,\n Jenkins Build Team"     	
+     }
+   }//post   
 }//pipeline
