@@ -15,13 +15,16 @@ pipeline {
     
    parameters {         
      choice(name: 'BuildEnvironment', choices: ['default', 'dev', 'sit', 'uat', 'pt', 'prod'], description: 'Choose an environment for build server.\n NOTE:- Run commands like - docker rmi <image-id>, docker stop <container-id> and docker rmi <container-id> before triggering the build.')     
-     booleanParam(name: 'CheckDeploy', defaultValue: true, description: 'This flag will check if the job will proceed with deployment')
+     booleanParam(name: 'SkipJunit', defaultValue: true, description: 'This flag will check if the job will proceed with deployment')
+     booleanParam(name: 'SkipDeploy', defaultValue: false, description: 'This flag will check if the job will proceed with deployment')
    }
    
    environment {
      GIT_CREDENTIALS = credentials('global-git-credentials')
      JENKINS_CREDENTIALS = credentials('global-jenkins-credentials')
-     BUILD_ENV = "${params.BuildEnvironment}"  
+     BUILD_ENV = "${params.BuildEnvironment}"
+     SKIP_JUNIT = "${params.SkipJunit}" 
+     SKIP_DEPLOY = "${params.Deploy}"     
      
      pom = readMavenPom(file: 'pom.xml')
      PROJECT_GROUP_ID = pom.getGroupId()
@@ -71,8 +74,8 @@ pipeline {
 	     @echo off
 	     echo 'Git Branch ==========' %BRANCH_NAME%
              echo 'Packaging for ==========' %PROJECT_GROUP_ID%:%PROJECT_ARTIFACT_ID%:%PROJECT_VERSION%:%PROJECT_PACKAGING%
-	     echo 'params.CheckDeploy' ${params.CheckDeploy}
-             mvn clean install -Dmaven.test.skip=true
+	     echo 'SKIP_JUNIT' %SKIP_JUNIT%
+             mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%
 	     
 	  '''   
         }//steps
