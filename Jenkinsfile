@@ -59,6 +59,7 @@ pipeline {
 	       echo 'PATH ==========' %PATH%
 	       mvn -version
 	       docker -v
+	       docker images -a --format "table {{.ID}}\\t{{.Repository}}\\t{{.Tag}}\\t{{.CreatedAt}}"   
 	   '''   	  
         }//steps
      }//stage
@@ -76,8 +77,7 @@ pipeline {
 	      echo 'Git Branch ==========' %BRANCH_NAME%
               echo 'Packaging for ==========' %PROJECT_GROUP_ID%:%PROJECT_ARTIFACT_ID%:%PROJECT_VERSION%:%PROJECT_PACKAGING%
 	      echo 'Skip Junit Test ==========' %SKIP_JUNIT%
-              mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%	 
-              docker images -a --format \"table {{.ID}}\\t{{.Repository}}\\t{{.Tag}}\\t{{.CreatedAt}}\"      
+              mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%	                  
 	    '''   	  
         }//steps
      }//stage
@@ -101,17 +101,17 @@ pipeline {
 	     '''
 	     script{
 		  //https://www.jenkins.io/doc/book/pipeline/docker/
-	  	  docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_NON_PROD_REGISTRY_CREDENTIALS) {
-		    def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
-		    customImage.push()
-		  }
+	  	  //docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_NON_PROD_REGISTRY_CREDENTIALS) {
+		   // def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
+		   // customImage.push()
+		  //}
 	     }
-
+//docker rmi %DOCKER_REGISTRY_IMAGE%
+		//docker rmi registry.hub.docker.com/%DOCKER_REGISTRY_IMAGE%
 	     bat '''
 	        @echo off		
 				
-	        docker rmi %DOCKER_REGISTRY_IMAGE%
-		docker rmi registry.hub.docker.com/%DOCKER_REGISTRY_IMAGE%
+	        
 	     '''
         }//steps
      }//stage
@@ -136,9 +136,7 @@ pipeline {
 		echo '################################## Stage - Docker Deploy ##################################'
 	        echo 'Deploying docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%		
 		docker pull %DOCKER_REGISTRY_IMAGE%
-	        docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 %DOCKER_REGISTRY_IMAGE%	  
-		docker ps -a --format "table {{.ID}}\\t{{.Image}}\\t{{.Ports}}\\t{{.Status}}"
-	        
+	        docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 %DOCKER_REGISTRY_IMAGE%	  	        
 	     '''
         }//steps
      }//stage      
