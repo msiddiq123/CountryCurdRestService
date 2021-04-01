@@ -59,9 +59,9 @@ pipeline {
 	       echo 'PATH ==========' %PATH%
 	       mvn -version
 	       docker -v
-	       docker images -a --format "table {{.ID}}\\t{{.Repository}}\\t{{.Tag}}\\t{{.CreatedAt}}"   
+	       
 	   '''   	  
-        }//steps
+        }//steps //docker images -a --format "table {{.ID}}\\t{{.Repository}}\\t{{.Tag}}\\t{{.CreatedAt}}"   
      }//stage
      
      stage('Maven Build') {
