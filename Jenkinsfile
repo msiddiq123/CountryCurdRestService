@@ -113,7 +113,6 @@ pipeline {
 	        docker rmi %DOCKER_REGISTRY_IMAGE%
 		docker rmi registry.hub.docker.com/%DOCKER_REGISTRY_IMAGE%
 	     '''
-	  }//script 
         }//steps
      }//stage
 
