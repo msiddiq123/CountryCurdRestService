@@ -76,7 +76,8 @@ pipeline {
 	      echo 'Git Branch ==========' %BRANCH_NAME%
               echo 'Packaging for ==========' %PROJECT_GROUP_ID%:%PROJECT_ARTIFACT_ID%:%PROJECT_VERSION%:%PROJECT_PACKAGING%
 	      echo 'Skip Junit Test ==========' %SKIP_JUNIT%
-              mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%	     
+              mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%	 
+              docker images -a --format \"table {{.ID}}\\t{{.Repository}}\\t{{.Tag}}\\t{{.CreatedAt}}\"      
 	    '''   	  
         }//steps
      }//stage
@@ -108,8 +109,7 @@ pipeline {
 
 	     bat '''
 	        @echo off		
-	        docker image ls -a
-		//docker image ls %DOCKER_REGISTRY_IMAGE%
+				
 	        docker rmi %DOCKER_REGISTRY_IMAGE%
 		docker rmi registry.hub.docker.com/%DOCKER_REGISTRY_IMAGE%
 	     '''
@@ -137,10 +137,10 @@ pipeline {
 	        echo 'Deploying docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%		
 		docker pull %DOCKER_REGISTRY_IMAGE%
 	        docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 %DOCKER_REGISTRY_IMAGE%	  
-		docker ps -a
+		docker ps -a --format "table {{.ID}}\\t{{.Image}}\\t{{.Ports}}\\t{{.Status}}"
 	        
 	     '''
-        }//steps //docker ps -aqf ancestor=%DOCKER_REGISTRY_IMAGE%
+        }//steps
      }//stage      
    }//stages
    
