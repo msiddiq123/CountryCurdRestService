@@ -50,18 +50,14 @@ pipeline {
    stages {   
      stage('Initialize') {
 	steps { 	  
-             //Use bat for windows and sh for Linux hosts/nodes 
-            //https://www.robvanderwoude.com/escapechars.php
-	    script{
-	       bat '''
-	          @echo off
-	          echo '################################## Stage - Initialize ##################################'
-	          echo 'M2_HOME ==========' %M2_HOME%
-	          echo 'PATH ==========' %PATH%
-	          mvn -version
-	          docker -v	       
-	      '''
-          }//script	   
+	     bat '''
+	        @echo off
+	        echo '################################## Stage - Initialize ##################################'
+	        echo 'M2_HOME ==========' %M2_HOME%
+	        echo 'PATH ==========' %PATH%
+		echo 'Git Branch ==========' %BRANCH_NAME%
+		echo 'Build Environment ==========' %BUILD_ENV%	       
+	     '''   
         }//steps 
      }//stage
      
@@ -72,17 +68,14 @@ pipeline {
 	   }
         }
 	steps {
-           script{
-	      bat '''
-	         @echo off
-	         echo '################################## Stage - Maven Build ##################################' 
-	         echo 'Git Branch ==========' %BRANCH_NAME%
-                 echo 'Packaging for ==========' %PROJECT_GROUP_ID%:%PROJECT_ARTIFACT_ID%:%PROJECT_VERSION%:%PROJECT_PACKAGING%
-	         echo 'Skip Junit Test ==========' %SKIP_JUNIT%
-                 mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%
-                 docker version		 
-	     ''' 	   
-           }//script	   	     	  
+	     bat '''
+	        @echo off
+	        echo '################################## Stage - Maven Build ##################################' 
+                echo 'Packaging for ==========' %PROJECT_GROUP_ID%:%PROJECT_ARTIFACT_ID%:%PROJECT_VERSION%:%PROJECT_PACKAGING%
+	        echo 'Skip Junit Test ==========' %SKIP_JUNIT%
+                mvn -version
+		mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%	 
+	     ''' 	      	     	  
         }//steps
      }//stage
      
@@ -102,6 +95,7 @@ pipeline {
 	        @echo off
 		echo '################################## Stage - Docker Build ##################################'
 	        echo 'Building docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%
+		docker -v
 	     '''
 	     script{
 	  	  docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_NON_PROD_REGISTRY_CREDENTIALS) {
@@ -139,7 +133,8 @@ pipeline {
 		echo '################################## Stage - Docker Deploy ##################################'
 	        echo 'Deploying docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%		
 		docker pull %DOCKER_REGISTRY_IMAGE%
-	        docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 %DOCKER_REGISTRY_IMAGE%	  	        
+	        docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 %DOCKER_REGISTRY_IMAGE%
+                docker ps -a 		
 	     '''
         }//steps
      }//stage      
