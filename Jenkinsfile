@@ -80,8 +80,7 @@ pipeline {
                  echo 'Packaging for ==========' %PROJECT_GROUP_ID%:%PROJECT_ARTIFACT_ID%:%PROJECT_VERSION%:%PROJECT_PACKAGING%
 	         echo 'Skip Junit Test ==========' %SKIP_JUNIT%
                  mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%
-		 docker -v
-                 docker images -a --format "table {{.ID}}\\t{{.Repository}}\\t{{.Tag}}\\t{{.CreatedAt}}"   		 
+                 docker version		 
 	     ''' 	   
            }//script	   	     	  
         }//steps
@@ -104,19 +103,18 @@ pipeline {
 		echo '################################## Stage - Docker Build ##################################'
 	        echo 'Building docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%
 	     '''
-	    // script{
-		  //https://www.jenkins.io/doc/book/pipeline/docker/
-	  	  //docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_NON_PROD_REGISTRY_CREDENTIALS) {
-		   // def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
-		   // customImage.push()
-		  //}
-	    // }
-//docker rmi %DOCKER_REGISTRY_IMAGE%
-		//docker rmi registry.hub.docker.com/%DOCKER_REGISTRY_IMAGE%
+	     script{
+	  	  docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_NON_PROD_REGISTRY_CREDENTIALS) {
+		    def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
+		    customImage.push()
+		  }
+	    }
+
 	     bat '''
-	        @echo off		
-				
-	        
+	        @echo off
+                docker images -a		
+		docker rmi %DOCKER_REGISTRY_IMAGE%
+		docker rmi registry.hub.docker.com/%DOCKER_REGISTRY_IMAGE%			        
 	     '''
         }//steps
      }//stage
