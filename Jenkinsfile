@@ -52,6 +52,7 @@ pipeline {
 	steps { 	  
              //Use bat for windows and sh for Linux hosts/nodes 
             //https://www.robvanderwoude.com/escapechars.php
+	    script{
 	    bat '''
 	       @echo off
 	       echo '################################## Stage - Initialize ##################################'
@@ -60,7 +61,8 @@ pipeline {
 	       mvn -version
 	       docker -v
 	       
-	   '''   	  
+	   '''
+          }	   
         }//steps //docker images -a --format "table {{.ID}}\\t{{.Repository}}\\t{{.Tag}}\\t{{.CreatedAt}}"   
      }//stage
      
