@@ -114,8 +114,8 @@ pipeline {
 	        @echo off		
 	        docker image ls -a
 		//docker image ls %DOCKER_REGISTRY_IMAGE%
-	        docker rmi %DOCKER_REGISTRY_IMAGE%
-		docker rmi registry.hub.docker.com/%DOCKER_REGISTRY_IMAGE%
+	        docker rmi %%DOCKER_REGISTRY_IMAGE%%
+		docker rmi registry.hub.docker.com/%%DOCKER_REGISTRY_IMAGE%%
 	     '''
 	  }//script 
         }//steps
