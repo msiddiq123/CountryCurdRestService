@@ -138,9 +138,9 @@ pipeline {
 		docker pull %DOCKER_REGISTRY_IMAGE%
 	        docker run -d -it -v /mnt/d/Shared_Project_Home/:/opt/logs/ -p 8081:8081 %DOCKER_REGISTRY_IMAGE%	  
 		docker ps -a
-	        //docker ps -aqf ancestor=%DOCKER_REGISTRY_IMAGE%
+	        
 	     '''
-        }//steps
+        }//steps //docker ps -aqf ancestor=%DOCKER_REGISTRY_IMAGE%
      }//stage      
    }//stages
    
