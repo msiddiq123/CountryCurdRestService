@@ -50,18 +50,16 @@ pipeline {
    stages {   
      stage('Initialize') {
 	steps { 	  
-          //Use bat for windows and sh for Linux hosts/nodes 
-          //https://www.robvanderwoude.com/escapechars.php
-	  script{
+             //Use bat for windows and sh for Linux hosts/nodes 
+            //https://www.robvanderwoude.com/escapechars.php
 	    bat '''
-	      @echo off
-	      echo '################################## Stage - Initialize ##################################'
-	      echo 'M2_HOME ==========' %M2_HOME%
-	      echo 'PATH ==========' %PATH%
-	      mvn -version
-	      docker -v
-	  '''   
-	  }//script	  
+	       @echo off
+	       echo '################################## Stage - Initialize ##################################'
+	       echo 'M2_HOME ==========' %M2_HOME%
+	       echo 'PATH ==========' %PATH%
+	       mvn -version
+	       docker -v
+	   '''   	  
         }//steps
      }//stage
      
@@ -72,7 +70,6 @@ pipeline {
 	   }
         }
 	steps {
-          script{
 	    bat '''
 	      @echo off
 	      echo '################################## Stage - Maven Build ##################################' 
@@ -80,8 +77,7 @@ pipeline {
               echo 'Packaging for ==========' %PROJECT_GROUP_ID%:%PROJECT_ARTIFACT_ID%:%PROJECT_VERSION%:%PROJECT_PACKAGING%
 	      echo 'Skip Junit Test ==========' %SKIP_JUNIT%
               mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%	     
-	    '''   
-	  }//script	  
+	    '''   	  
         }//steps
      }//stage
      
@@ -96,26 +92,26 @@ pipeline {
                   }
            } 	              
         }     
-	steps {	  
-	  script{
+	steps {	  	  
 	     bat '''
 	        @echo off
 		echo '################################## Stage - Docker Build ##################################'
 	        echo 'Building docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%
 	     '''
-	     
-	     //https://www.jenkins.io/doc/book/pipeline/docker/
-	     docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_NON_PROD_REGISTRY_CREDENTIALS) {
-                def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
-                customImage.push()
-             }
+	     script{
+		  //https://www.jenkins.io/doc/book/pipeline/docker/
+	  	  docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_NON_PROD_REGISTRY_CREDENTIALS) {
+		    def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
+		    customImage.push()
+		  }
+	     }
 
 	     bat '''
 	        @echo off		
 	        docker image ls -a
 		//docker image ls %DOCKER_REGISTRY_IMAGE%
-	        docker rmi %%DOCKER_REGISTRY_IMAGE%%
-		docker rmi registry.hub.docker.com/%%DOCKER_REGISTRY_IMAGE%%
+	        docker rmi %DOCKER_REGISTRY_IMAGE%
+		docker rmi registry.hub.docker.com/%DOCKER_REGISTRY_IMAGE%
 	     '''
 	  }//script 
         }//steps
@@ -136,7 +132,6 @@ pipeline {
            } 	              
         }     
 	steps {
-	  script{
 	     bat '''
 	        @echo off
 		echo '################################## Stage - Docker Deploy ##################################'
@@ -146,7 +141,6 @@ pipeline {
 		docker ps -a
 	        //docker ps -aqf ancestor=%DOCKER_REGISTRY_IMAGE%
 	     '''
-	  }//script 
         }//steps
      }//stage      
    }//stages
