@@ -99,13 +99,13 @@ pipeline {
 		echo '################################## Stage - Docker Build ##################################'
 	        echo 'Building docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%
 	     '''
-	     script{
+	    // script{
 		  //https://www.jenkins.io/doc/book/pipeline/docker/
 	  	  //docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_NON_PROD_REGISTRY_CREDENTIALS) {
 		   // def customImage = docker.build(DOCKER_REGISTRY_IMAGE)               
 		   // customImage.push()
 		  //}
-	     }
+	    // }
 //docker rmi %DOCKER_REGISTRY_IMAGE%
 		//docker rmi registry.hub.docker.com/%DOCKER_REGISTRY_IMAGE%
 	     bat '''
