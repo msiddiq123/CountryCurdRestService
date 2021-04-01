@@ -73,7 +73,7 @@ pipeline {
 	        echo '################################## Stage - Maven Build ##################################' 
                 echo 'Packaging for ==========' %PROJECT_GROUP_ID%:%PROJECT_ARTIFACT_ID%:%PROJECT_VERSION%:%PROJECT_PACKAGING%
 	        echo 'Skip Junit Test ==========' %SKIP_JUNIT%
-                mvn -version
+                echo 'Maven Version ==========' mvn -version	 
 		mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%	 
 	     ''' 	      	     	  
         }//steps
@@ -95,7 +95,7 @@ pipeline {
 	        @echo off
 		echo '################################## Stage - Docker Build ##################################'
 	        echo 'Building docker image on Docker Non-Prod Server ==========' %DOCKER_NON_PROD_SERVER%
-		docker -v
+		echo 'Dcoker Version ==========' docker -v
 	     '''
 	     script{
 	  	  docker.withRegistry(DOCKER_NON_PROD_REGISTRY_URL, DOCKER_NON_PROD_REGISTRY_CREDENTIALS) {
