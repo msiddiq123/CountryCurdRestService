@@ -53,17 +53,16 @@ pipeline {
              //Use bat for windows and sh for Linux hosts/nodes 
             //https://www.robvanderwoude.com/escapechars.php
 	    script{
-	    bat '''
-	       @echo off
-	       echo '################################## Stage - Initialize ##################################'
-	       echo 'M2_HOME ==========' %M2_HOME%
-	       echo 'PATH ==========' %PATH%
-	       mvn -version
-	       docker -v
-	       
-	   '''
-          }	   
-        }//steps //docker images -a --format "table {{.ID}}\\t{{.Repository}}\\t{{.Tag}}\\t{{.CreatedAt}}"   
+	       bat '''
+	          @echo off
+	          echo '################################## Stage - Initialize ##################################'
+	          echo 'M2_HOME ==========' %M2_HOME%
+	          echo 'PATH ==========' %PATH%
+	          mvn -version
+	          docker -v	       
+	      '''
+          }//script	   
+        }//steps 
      }//stage
      
      stage('Maven Build') {
@@ -73,14 +72,18 @@ pipeline {
 	   }
         }
 	steps {
-	    bat '''
-	      @echo off
-	      echo '################################## Stage - Maven Build ##################################' 
-	      echo 'Git Branch ==========' %BRANCH_NAME%
-              echo 'Packaging for ==========' %PROJECT_GROUP_ID%:%PROJECT_ARTIFACT_ID%:%PROJECT_VERSION%:%PROJECT_PACKAGING%
-	      echo 'Skip Junit Test ==========' %SKIP_JUNIT%
-              mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%	                  
-	    '''   	  
+           script{
+	      bat '''
+	         @echo off
+	         echo '################################## Stage - Maven Build ##################################' 
+	         echo 'Git Branch ==========' %BRANCH_NAME%
+                 echo 'Packaging for ==========' %PROJECT_GROUP_ID%:%PROJECT_ARTIFACT_ID%:%PROJECT_VERSION%:%PROJECT_PACKAGING%
+	         echo 'Skip Junit Test ==========' %SKIP_JUNIT%
+                 mvn clean install -Dmaven.test.skip=%SKIP_JUNIT%
+		 docker -v
+                 docker images -a --format "table {{.ID}}\\t{{.Repository}}\\t{{.Tag}}\\t{{.CreatedAt}}"   		 
+	     ''' 	   
+           }//script	   	     	  
         }//steps
      }//stage
      
